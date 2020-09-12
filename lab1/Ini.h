@@ -11,6 +11,8 @@ public:
     Ini();
     Ini(const std::string& path);
 
+    void load(const std::string& path);
+
     void show() const;
 
     enum Error

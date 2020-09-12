@@ -7,6 +7,7 @@ int main()
    Ini ini("tsest.ini");
 
    ini.show();
- 
+
+   
     return 0;
 }

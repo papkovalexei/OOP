@@ -4,7 +4,12 @@ Ini::Ini() {}
 
 Ini::Ini(const std::string& path)
 {
-    Error check_error = parse(path);
+   load(path);
+}
+
+void Ini::load(const std::string& path)
+{
+     Error check_error = parse(path);
 
     if (check_error == INCORRECT_FORMAT)
         std::cout << "Incorrect .ini format" << std::endl;
