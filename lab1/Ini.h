@@ -13,21 +13,30 @@ public:
 
     void load(const std::string& path);
 
-    int getInteger(std::string section, std::string variable) const;
-    float getFloat(std::string section, std::string variable) const;
-    std::string getString(std::string section, std::string variable) const;
+    int getInteger(const std::string& section, const std::string& variable) const;
+    float getFloat(const std::string& section, const std::string& variable) const;
+    std::string getString(const std::string& section, const std::string& variable) const;
 
     void show() const;
 
-    enum Error
+    enum ErrorParser
     {
         GOOD,
         INCORRECT_FORMAT,
         FILE_NOT_EXISTS
     };
+
+    enum ErrorData
+    {
+        SUCCESS,
+        DONT_SECTION,
+        DONT_VARIABLE
+    };
 private:
 
-    Error parse(const std::string& path);
+    ErrorData getVariable(const std::string& section, const std::string& variable, std::string& answer) const;
+
+    ErrorParser parse(const std::string& path);
 
     std::vector<Section> _data;
 };

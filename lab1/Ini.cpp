@@ -9,7 +9,7 @@ Ini::Ini(const std::string& path)
 
 void Ini::load(const std::string& path)
 {
-     Error check_error = parse(path);
+     ErrorParser check_error = parse(path);
 
     if (check_error == INCORRECT_FORMAT)
         std::cerr << "Incorrect .ini format" << std::endl;
@@ -17,7 +17,7 @@ void Ini::load(const std::string& path)
         std::cerr << "File doesn't exists" << std::endl;
 }
 
-Ini::Error Ini::parse(const std::string& path)
+Ini::ErrorParser Ini::parse(const std::string& path)
 {
     std::ifstream input(path);
 
@@ -111,7 +111,9 @@ Ini::Error Ini::parse(const std::string& path)
         return FILE_NOT_EXISTS;
     }
 
-    return GOOD;
+    input.close();
+
+    return ErrorParser::GOOD;
 }
 
 void Ini::show() const
@@ -128,6 +130,9 @@ void Ini::show() const
 
 bool isIntegerNumber(std::string str)
 {
+    if (str.size() == 0)
+        return false;
+
     for (int i = 0; i < str.size(); i++)
         if (str[i] < '0' || str[i] > '9')
             return false;
@@ -135,10 +140,32 @@ bool isIntegerNumber(std::string str)
     return true;
 }
 
-int Ini::getInteger(std::string section, std::string variable) const
+bool isFloatNumber(std::string str)
+{
+    if (str.size() == 0)
+        return false;
+    if (str[0] == '.')
+        return false;
+    int count_dot = 0;
+
+    for (int i = 0; i < str.size(); i++)
+        if ((str[i] < '0' || str[i] > '9') && str[i] != '.')
+            return false;
+        else if (str[i] == '.')
+        {
+            count_dot++;
+
+            if (count_dot > 1)
+                return false;
+        }
+
+    return true;
+}
+
+Ini::ErrorData Ini::getVariable(const std::string& section, const std::string& variable, std::string& answer) const
 {
     bool flag_section = false, flag_variable = false, flag_format = false;
-    int answer = 0;
+    int code = 0;
     Section need_section;
 
     for (int i = 0; i < _data.size(); i++)
@@ -151,27 +178,74 @@ int Ini::getInteger(std::string section, std::string variable) const
         }
     }
     
-    for (int i = 0; i < need_section.size(); i++)
-    {
-        if (need_section[i].first == variable)
+    if (flag_section)
+        for (int i = 0; i < need_section.size(); i++)
         {
-            flag_variable = true;
-        
-            if (isIntegerNumber(need_section[i].second))
+            if (need_section[i].first == variable)
             {
-                flag_format = true;
-                answer = std::atoi(need_section[i].second.c_str());
-            }
+                flag_variable = true;
             
+                answer = need_section[i].second;
+            }
         }
-    }
-
-    if (!flag_section)
-        std::cerr << "Doesn't exists section: " << section << std::endl;
+    if (flag_variable && flag_section)
+        return ErrorData::SUCCESS;
     else if (!flag_variable)
-        std::cerr << "Doesn't exists variable:" << variable << std::endl;
-    else if (!flag_format)
-        std::cerr << "It's not integer" << std::endl;
+        return ErrorData::DONT_VARIABLE;
+    else if (!flag_section)
+        return ErrorData::DONT_SECTION;
+}
 
+std::string Ini::getString(const std::string& section, const std::string& variable) const
+{
+    std::string answer = "";;
+
+    ErrorData code = getVariable(section, variable, answer);
+
+    if (code == ErrorData::DONT_SECTION)
+        std::cerr << "Doesn't exists section: " << section << std::endl;
+    else if (code == ErrorData::DONT_VARIABLE)
+        std::cerr << "Doesn't exists variable: " << variable << std::endl;
     return answer;
+}
+
+float Ini::getFloat(const std::string& section, const std::string& variable) const
+{
+    std::string answer;
+
+    ErrorData code = getVariable(section, variable, answer);
+
+    if (code == ErrorData::SUCCESS)
+    {
+        if (isFloatNumber(answer))
+            return std::atof(answer.c_str());
+        else
+            std::cerr << section << "::" << variable << ": not float" << std::endl;
+    }
+    else if (code == ErrorData::DONT_SECTION)
+        std::cerr << "Doesn't exists section: " << section << std::endl;
+    else if (code == ErrorData::DONT_VARIABLE)
+        std::cerr << "Doesn't exists variable: " << variable << std::endl;
+    return 0.0;
+}
+
+int Ini::getInteger(const std::string& section, const std::string& variable) const
+{
+    std::string answer;
+
+    ErrorData code = getVariable(section, variable, answer);
+
+    if (code == ErrorData::SUCCESS)
+    {
+        if (isIntegerNumber(answer))
+            return std::atoi(answer.c_str());
+        else
+            std::cerr << section << "::" << variable << ": not integer" << std::endl;
+    }
+    else if (code == ErrorData::DONT_SECTION)
+        std::cerr << "Doesn't exists section: " << section << std::endl;
+    else if (code == ErrorData::DONT_VARIABLE)
+        std::cerr << "Doesn't exists variable: " << variable << std::endl;
+
+    return 0;
 }
