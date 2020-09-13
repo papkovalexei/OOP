@@ -4,10 +4,9 @@
 
 int main()
 {
-   Ini ini("tsest.ini");
+    Ini ini("test.ini");
 
-   ini.show();
+    ini.getInteger("[Profile1]", "Default");
 
-   
     return 0;
 }

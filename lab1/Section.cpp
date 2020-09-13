@@ -1,6 +1,9 @@
 #include "Section.h"
 
-Section::Section() {}
+Section::Section() 
+{
+    _name = "";
+}
 
 Section::Section(const std::string& name, const std::vector<std::pair<std::string, std::string>>& variable_data)
 {

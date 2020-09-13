@@ -13,6 +13,10 @@ public:
 
     void load(const std::string& path);
 
+    int getInteger(std::string section, std::string variable) const;
+    float getFloat(std::string section, std::string variable) const;
+    std::string getString(std::string section, std::string variable) const;
+
     void show() const;
 
     enum Error

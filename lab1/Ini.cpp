@@ -12,9 +12,9 @@ void Ini::load(const std::string& path)
      Error check_error = parse(path);
 
     if (check_error == INCORRECT_FORMAT)
-        std::cout << "Incorrect .ini format" << std::endl;
+        std::cerr << "Incorrect .ini format" << std::endl;
     else if (check_error == FILE_NOT_EXISTS)
-        std::cout << "File doesn't exists" << std::endl;
+        std::cerr << "File doesn't exists" << std::endl;
 }
 
 Ini::Error Ini::parse(const std::string& path)
@@ -124,4 +124,54 @@ void Ini::show() const
             std::cout << _data[i][j].first << "=" << _data[i][j].second << std::endl;
         std::cout << std::endl;
     }
+}
+
+bool isIntegerNumber(std::string str)
+{
+    for (int i = 0; i < str.size(); i++)
+        if (str[i] < '0' || str[i] > '9')
+            return false;
+
+    return true;
+}
+
+int Ini::getInteger(std::string section, std::string variable) const
+{
+    bool flag_section = false, flag_variable = false, flag_format = false;
+    int answer = 0;
+    Section need_section;
+
+    for (int i = 0; i < _data.size(); i++)
+    {
+        if (_data[i].getName() == section)
+        {
+            flag_section = true;
+            need_section = _data[i];
+            break;
+        }
+    }
+    
+    for (int i = 0; i < need_section.size(); i++)
+    {
+        if (need_section[i].first == variable)
+        {
+            flag_variable = true;
+        
+            if (isIntegerNumber(need_section[i].second))
+            {
+                flag_format = true;
+                answer = std::atoi(need_section[i].second.c_str());
+            }
+            
+        }
+    }
+
+    if (!flag_section)
+        std::cerr << "Doesn't exists section: " << section << std::endl;
+    else if (!flag_variable)
+        std::cerr << "Doesn't exists variable:" << variable << std::endl;
+    else if (!flag_format)
+        std::cerr << "It's not integer" << std::endl;
+
+    return answer;
 }
