@@ -9,12 +9,17 @@ Ini::Ini(const std::string& path)
 
 void Ini::load(const std::string& path)
 {
-     ErrorParser check_error = parse(path);
+    if (std::regex_match(path, std::regex("[a-zA-Z_0-9]*\\.ini")))
+    {
+        ErrorParser check_error = parse(path);
 
     if (check_error == INCORRECT_FORMAT)
         std::cerr << "Incorrect .ini format" << std::endl;
     else if (check_error == FILE_NOT_EXISTS)
         std::cerr << "File doesn't exists" << std::endl;
+    }
+    else
+        std::cerr << "Don't .ini file" << std::endl;
 }
 
 Ini::ErrorParser Ini::parse(const std::string& path)

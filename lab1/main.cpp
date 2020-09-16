@@ -4,7 +4,7 @@
 
 int main()
 {
-    Ini ini("test.ini");
+    Ini ini("test.isni");
 
     std::cout << ini.getString("[Profile1]", "Name") << std::endl;
     std::cout << ini.getInteger("[Profile1]", "Default") << std::endl;
