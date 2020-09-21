@@ -4,12 +4,16 @@
 
 int main()
 {
-    Ini ini("test.isni");
+    Ini ini("test.ini");
 
-    std::cout << ini.getString("[Profile1]", "Name") << std::endl;
-    std::cout << ini.getInteger("[Profile1]", "Default") << std::endl;
-    std::cout << ini.getFloat("[Profile1]", "IsRelative") << std::endl;
-    
+    if (ini.is_okay())
+    {
+        std::cout << ini.getString("[Profile1]", "Name") << std::endl;
+        std::cout << ini.getInteger("[Profile1]", "Default") << std::endl;
+        std::cout << ini.getFloat("[Profile1]", "IsRelative") << std::endl;
+    }
+    else
+        std::cout << "Some error\n";
 
     return 0;
 }

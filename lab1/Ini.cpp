@@ -1,10 +1,14 @@
 #include "Ini.h"
 
-Ini::Ini() {}
+Ini::Ini() 
+{
+    flag_okay = false;
+}
 
 Ini::Ini(const std::string& path)
 {
-   load(path);
+    flag_okay = false;
+    load(path);
 }
 
 void Ini::load(const std::string& path)
@@ -13,17 +17,29 @@ void Ini::load(const std::string& path)
     {
         ErrorParser check_error = parse(path);
 
-    if (check_error == INCORRECT_FORMAT)
-        std::cerr << "Incorrect .ini format" << std::endl;
-    else if (check_error == FILE_NOT_EXISTS)
-        std::cerr << "File doesn't exists" << std::endl;
+        if (check_error == INCORRECT_FORMAT)
+            std::cerr << "Incorrect .ini format" << std::endl;
+        else if (check_error == FILE_NOT_EXISTS)
+            std::cerr << "File doesn't exists" << std::endl;
+        else if (check_error == COLLISION_NAME)
+            std::cerr << "Collision name's" << std::endl;
+        else if (check_error == GOOD)
+            flag_okay = true;
     }
     else
+    {
         std::cerr << "Don't .ini file" << std::endl;
+    }
+}
+
+bool Ini::is_okay() const
+{
+    return flag_okay;
 }
 
 Ini::ErrorParser Ini::parse(const std::string& path)
 {
+
     std::ifstream input(path);
 
     if (input.is_open())
@@ -74,6 +90,9 @@ Ini::ErrorParser Ini::parse(const std::string& path)
                     if (std::regex_match(str, std::regex("[a-zA-Z_0-9\\-]* *= *[a-zA-Z_0-9\\.\\-]*"))
                         || std::regex_match(str, std::regex("[a-zA-Z_0-9\\-]* *= *[a-zA-Z_0-9\\.\\-]* *;.*")))
                     {
+                        if (_data.size() == 0)
+                            return INCORRECT_SECTION;
+
                         variable.first = "";
                         variable.second = "";
                         
@@ -95,6 +114,12 @@ Ini::ErrorParser Ini::parse(const std::string& path)
                             }
                             else
                                 variable.first += str[i];
+                        }
+
+                        for (int j = 0; j < _data[_data.size() - 1].size(); j++)
+                        {
+                            if (_data[_data.size() - 1][j].first == variable.first)
+                                return COLLISION_NAME;
                         }
 
                         _data[_data.size() - 1].addVariable(variable);
