@@ -14,6 +14,7 @@ public:
 
     int getUID() const;
     std::pair<Item, std::pair<int, int>>& getItems(const int& item_UID);
+    const std::pair<Item, std::pair<int, int>>& getItems(const int& item_UID) const;
 
     void addItem(const Item& item);
     void addItem(const Item& item, const int& count, const int& price);

@@ -1,25 +1,28 @@
+#include <map>
+
 #include "Ecosystem.h"
 
 int main()
 {
+    std::map<std::string, int> shops;
+    std::map<std::string, int> items;
+
     Ecosystem system;
 
-    system.createShop("Chip-Dip", "Dekabristov 14");
-    system.createShop("Pyatorochka", "Nevsrie 8k1");
-    system.createShop("Diksi", "Sennaya 8k1");
+    shops["Chip-Dip"]    = system.createShop("Chip-Dip", "Dekabristov 14");
+    shops["Pyatorochka"] = system.createShop("Pyatorochka", "Nevsrie 8k1");
+    shops["Diksi"]       = system.createShop("Diksi", "Sennaya 8k1");
 
-    system.createItem("Floor");
-    system.createItem("CPU");
-    system.createItem("GP");
-    system.createItem("Milk");
+    items["Floor"] = system.createItem("Floor");
+    items["CPU"]   = system.createItem("CPU");
+    items["GP"]    = system.createItem("GP");
+    items["Milk"]  = system.createItem("Milk");
 
-    system.shipment(0, 2, 10, 3);
-    system.shipment(0, 1, 10, 2);
-    system.shipment(0, 3, 10, 1);
+    system.shipment(shops["Chip-Dip"], items["GP"], 10, 3);
+    system.shipment(shops["Chip-Dip"], items["CPU"], 10, 2);
+    system.shipment(shops["Chip-Dip"], items["Milk"], 9, 4);
 
-   // system.showSystem();
-    system.showShop(0);
-    system.whichItem(0, 12);
+    std::cout << system.sumShipment(shops["Chip-Dip"], items["Milk"], 7) << std::endl;
 
     return 0;
 }

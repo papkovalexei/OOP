@@ -26,6 +26,15 @@ std::pair<Item, std::pair<int, int>>& Shop::getItems(const int& item_UID)
     throw 1;
 }
 
+const std::pair<Item, std::pair<int, int>>& Shop::getItems(const int& item_UID) const
+{
+    for (int i = 0; i < _items.size(); i++)
+        if (_items[i].first.getUID() == item_UID)
+            return _items[i];
+
+    throw 1;
+}
+
 void Shop::addItem(const Item& item)
 {
     std::pair<Item, std::pair<int, int>> buffer;
