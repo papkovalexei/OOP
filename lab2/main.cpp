@@ -13,12 +13,13 @@ int main()
     system.createItem("GP");
     system.createItem("Milk");
 
-    system.shipment(1, 3, 10, 110);
-    system.shipment(1, 3, 2, 228);
-    system.shipment(1, 2, 1488, 20);
-    system.shipment(1, 2, 10, 20);
+    system.shipment(0, 2, 10, 3);
+    system.shipment(0, 1, 10, 2);
+    system.shipment(0, 3, 10, 1);
 
-    system.showSystem();
+   // system.showSystem();
+    system.showShop(0);
+    system.whichItem(0, 12);
 
     return 0;
 }

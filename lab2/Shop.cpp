@@ -47,3 +47,18 @@ void Shop::addItem(const Item& item, const int& count, const int& price)
 
     _items.push_back(buffer);
 }
+
+int Shop::getPriceItem(const int& item_UID) const
+{
+    for (auto it = _items.begin(); it != _items.end(); it++)
+    {
+        if ((*it).first.getUID() == item_UID && (*it).second.first > 0)
+            return (*it).second.second;
+    }
+    return -1;
+}
+
+std::vector<std::pair<Item, std::pair<int, int>>> Shop::getAllItems() const
+{
+    return _items;
+}
