@@ -1,5 +1,5 @@
 #include <set>
-#include <cstdlib>
+#include <algorithm>
 
 #include "Ecosystem.h"
 
@@ -113,6 +113,53 @@ int Ecosystem::getCheapShop(const int& item_UID) const
         return -3;
 
     return answer_UID;
+}
+
+int Ecosystem::getCheapShop(const std::vector<std::pair<int, int>> products) const
+{
+    int min_sum = -1, shop_UID = -1;
+
+    for (auto it = products.begin(); it != products.end(); it++)
+        if ((*it).first <= 0 || (*it).first > _items.size() || (*it).second <= 0)
+            return -1;
+
+    // first - item_UID, second - count
+    for (auto shop = _shops.begin(); shop != _shops.end(); shop++)
+    {
+        int sum = 0;
+
+        for (auto it = products.begin(); it != products.end(); it++)
+        {
+            int buffer_sum = sumShipment((*shop).getUID(), (*it).first, (*it).second);
+
+            if (buffer_sum == -1)
+            {
+                sum = -1;
+                break;
+            }
+            else
+                sum += buffer_sum;
+        }
+
+        if (sum != -1)
+        {
+            if (min_sum == -1)
+            {
+                min_sum = sum;
+                shop_UID = (*shop).getUID();
+            }
+            else
+            {
+                if (min_sum > sum)
+                {
+                    min_sum = sum;
+                    shop_UID = (*shop).getUID();
+                }
+            }
+        }
+    }
+
+    return shop_UID;
 }
 
 int Ecosystem::showShop(const int& shop_UID) const

@@ -16,6 +16,7 @@ public:
     int createItem(const std::string& name);
 
     int getCheapShop(const int& item_UID) const;
+    int getCheapShop(const std::vector<std::pair<int, int>> products) const;
     int shipment(const int& shop_UID, const int& item_UID, const int& count, const int& price);
     int sumShipment(const int& shop_UID, const int& item_UID, const int& count) const;
     int whichItem(const int& shop_UID, const int& money) const;
