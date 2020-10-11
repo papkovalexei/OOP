@@ -22,6 +22,7 @@ public:
     void shipment(const int shop_UID, const int item_UID, const int count, const int price);
 
     void countBuyItems(const int shop_UID, const int money) const;
+    int buyItems(const int shop_UID, const std::vector<std::pair<int, int>>& items);
 
     void showSystem() const;
     void showShop(const int shop_UID) const;
@@ -32,6 +33,8 @@ public:
         INCORRECT_ITEM_UID,
         INCORRECT_COUNT,
         INCORRECT_PRICE,
+        INCORRECT_MONEY,
+        INCORRECT_SHIP,
         ALL_SHOP_EMPTY
     };
 

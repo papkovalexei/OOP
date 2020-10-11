@@ -112,3 +112,34 @@ void Ecosystem::countBuyItems(const int shop_UID, const int money) const
             std::cout << item.first << " count: " << count << " for the sum " << money - cash << std::endl;
     }
 }
+
+int Ecosystem::buyItems(const int shop_UID, const std::vector<std::pair<int, int>>& items)
+{
+    if (shop_UID < 0 || shop_UID >= _shops.size())
+        throw Error::INCORRECT_SHOP_UID;
+    else if (items.empty())
+        throw Error::INCORRECT_SHIP;
+
+    auto item_in_shop = _shops[shop_UID].getAllItem();
+
+    int answer = 0;
+
+    for (auto& now_item : items)
+    {
+        if (now_item.first <= 0 || now_item.second <= 0)
+            throw Error::INCORRECT_SHIP;
+
+        if (item_in_shop.count(_items[now_item.first]) == 0)
+            return -1;
+
+        if (item_in_shop[_items[now_item.first]].first < now_item.second)
+            return -1;
+        
+        item_in_shop[_items[now_item.first]].first -= now_item.second;
+        answer += now_item.second * item_in_shop[_items[now_item.first]].second;
+    }
+
+    _shops[shop_UID].shipment(item_in_shop);
+
+    return answer;
+}

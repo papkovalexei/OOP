@@ -30,12 +30,22 @@ int main()
 
     for (auto shop = shops.begin(); shop != shops.end(); shop++)
         for (auto item = items.begin(); item != items.end(); item++)
-            system.shipment((*shop).second, (*item).second, rand() % 30 + 1, rand() % 100 + 1);
+            system.shipment((*shop).second, (*item).second, rand() % 30 + 10, rand() % 100 + 10);
     
-    system.showSystem();
+    system.showShop(shops["Diksi"]);
+
+    std::vector<std::pair<int, int>> buy;
+
+    buy.push_back(std::pair<int, int>(items["CPU"], 4));
+    buy.push_back(std::pair<int, int>(items["GP"], 7));
+    buy.push_back(std::pair<int, int>(items["Al"], 2));
+
+    std::cout << "Sum: " << system.buyItems(shops["Diksi"], buy) << std::endl;
+
+    system.showShop(shops["Diksi"]);
 
     //system.showShop(system.getCheapShop(items["CPU"]));
-    system.countBuyItems(shops["Diksi"], 200);
+    //system.countBuyItems(shops["Diksi"], 200);
 
     return 0;
 }
