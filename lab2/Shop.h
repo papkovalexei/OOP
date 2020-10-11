@@ -1,41 +1,36 @@
-#ifndef SHOP_H
-#define SHOP_H
+#ifndef H_SHOP
+#define H_SHOP
 
+#include <map>
 #include <iostream>
-#include <vector>
 
 #include "Item.h"
 
-class Shop 
+class Shop
 {
 public:
     Shop();
-    Shop(const std::string& name, const std::string& address, const int& uid);
+    Shop(const std::string& name, const std::string& address, const int uid);
 
+    int getPriceItem(const Item& item) const;
     int getUID() const;
-    std::pair<Item, std::pair<int, int>>& getItems(const int& item_UID);
-    const std::pair<Item, std::pair<int, int>>& getItems(const int& item_UID) const;
-
-    void addItem(const Item& item);
-    void addItem(const Item& item, const int& count, const int& price);
-
-    int getPriceItem(const int& item_UID) const;
-    std::vector<std::pair<Item, std::pair<int, int>>> getAllItems() const;
+    void shipment(const Item& item, const int count, const int price);
 
     friend std::ostream& operator<<(std::ostream& os, const Shop& shop)
     {
-        os << shop._name << " (" << shop._uid << ")" << std::endl;
-        os << "Address: " << shop._address << std::endl;
-        
-        for (auto it = shop._items.begin(); it != shop._items.end(); it++)
-            os << "***: " << (*it).first << "  price: " << (*it).second.second << "  count: " << (*it).second.first << std::endl;
+        os << "( " << shop._uid << " ) " << shop._name << " : " << shop._address << std::endl << "=========================" << std::endl;
+
+        for (auto& item : shop._items)
+            os << item.first << ": count = " << item.second.first << "  price = " << item.second.second << std::endl;
+
         return os;
     }
+
 private:
-    int _uid;
+    std::map<Item, std::pair<int, int>> _items;
     std::string _name;
     std::string _address;
-    std::vector<std::pair<Item, std::pair<int, int>>> _items; // first - item; second.first; - count second.second - price
+    int _uid;
 };
 
 #endif

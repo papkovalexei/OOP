@@ -1,8 +1,9 @@
-#ifndef ECOSYSTEM_H
-#define ECOSYSTEM_H
+#ifndef H_ECOSYSTEM
+#define H_ECOSYSTEM
 
-#include <iostream>
 #include <vector>
+#include <string>
+#include <iostream>
 
 #include "Shop.h"
 #include "Item.h"
@@ -11,25 +12,30 @@ class Ecosystem
 {
 public:
     Ecosystem();
+    Ecosystem(Ecosystem& system);
+
+    int getCheapShop(const int item_UID) const;
 
     int createShop(const std::string& name, const std::string& address);
     int createItem(const std::string& name);
 
-    int getCheapShop(const int& item_UID) const;
-    int getCheapShop(const std::vector<std::pair<int, int>> products) const;
-    int shipment(const int& shop_UID, const int& item_UID, const int& count, const int& price);
-    int sumShipment(const int& shop_UID, const int& item_UID, const int& count) const;
-    int whichItem(const int& shop_UID, const int& money) const;
+    void shipment(const int shop_UID, const int item_UID, const int count, const int price);
 
     void showSystem() const;
-    int showShop(const int& shop_UID) const;
+    void showShop(const int shop_UID) const;
+
+    enum Error
+    {
+        INCORRECT_SHOP_UID,
+        INCORRECT_ITEM_UID,
+        INCORRECT_COUNT,
+        INCORRECT_PRICE,
+        ALL_SHOP_EMPTY
+    };
 
 private:
     std::vector<Shop> _shops;
     std::vector<Item> _items;
-
-    int _next_uid_shop;
-    int _next_uid_item;
 };
 
 #endif

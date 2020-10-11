@@ -1,18 +1,17 @@
 #include "Item.h"
 
 Item::Item()
-    : _name(""), _uid(-1)
 {
 
 }
 
-Item::Item(const std::string& name, const int& uid)
+Item::Item(const std::string& name, const int uid)
     : _name(name), _uid(uid)
 {
 
 }
 
-int Item::getUID() const
+bool Item::operator<(const Item& other) const
 {
-    return _uid;
+    return this->_uid < other._uid;
 }

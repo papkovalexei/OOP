@@ -27,18 +27,14 @@ int main()
     items["Al"]     = system.createItem("Al");
     items["Card"]   = system.createItem("Card"); 
 
+
     for (auto shop = shops.begin(); shop != shops.end(); shop++)
         for (auto item = items.begin(); item != items.end(); item++)
-            system.shipment((*shop).second, (*item).second, rand() % 30, rand() % 100);
-
-    system.showSystem();
+            system.shipment((*shop).second, (*item).second, rand() % 30 + 1, rand() % 100 + 1);
     
-    std::vector<std::pair<int, int>> products;
+    system.showSystem();
 
-    products.push_back(std::pair<int, int>(items["Paper"], 5));
-    products.push_back(std::pair<int, int>(items["Pen"], 3));
-
-    system.showShop(system.getCheapShop(products));
+    system.showShop(system.getCheapShop(items["CPU"]));
 
     return 0;
 }

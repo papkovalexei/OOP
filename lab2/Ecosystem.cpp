@@ -1,265 +1,90 @@
-#include <set>
-#include <algorithm>
-
 #include "Ecosystem.h"
 
-Ecosystem::Ecosystem() 
-    : _next_uid_item(1), _next_uid_shop(1)
+Ecosystem::Ecosystem()
+{
+
+}
+
+Ecosystem::Ecosystem(Ecosystem& system)
+    : _shops(system._shops), _items(system._items)
 {
 
 }
 
 int Ecosystem::createShop(const std::string& name, const std::string& address)
 {
-    _shops.push_back(Shop(name, address, _next_uid_shop));   
+    _shops.push_back(Shop(name, address, _shops.size()));
 
-    return _next_uid_shop++;
+    return _shops.size() - 1;
 }
 
 int Ecosystem::createItem(const std::string& name)
 {
-    _items.push_back(Item(name, _next_uid_item));
+    _items.push_back(Item(name, _items.size()));
 
-    return _next_uid_item++;
+    return _items.size() - 1;
 }
 
-int Ecosystem::shipment(const int& shop_UID, const int& item_UID, const int& count, const int& price)
+int Ecosystem::getCheapShop(const int item_UID) const
 {
-    if (shop_UID <= 0 || item_UID <= 0 || count <= 0 || price < 0 || shop_UID > _shops.size() || item_UID > _items.size())
-        return 4;
+    if (item_UID < 0 || item_UID >= _items.size())
+        throw Error::INCORRECT_ITEM_UID;
 
-    auto iterator_shop = _shops.end();
-    auto iterator_item = _items.end();
+    int answer_uid = -1, min_price = -1;
 
-    for (auto it = _shops.begin(); it != _shops.end(); it++)
+    for (auto& shop : _shops)
     {
-        if ((*it).getUID() == shop_UID)
+        int now_uid = shop.getUID();
+        int now_price = shop.getPriceItem(_items[item_UID]);
+
+        if (min_price == -1 && now_price != -1)
         {
-            iterator_shop = it;
-            break;
+            min_price = now_price;
+            answer_uid = now_uid;
+            continue;
+        }
+
+        if (now_price < min_price)
+        {
+            min_price = now_price;
+            answer_uid = now_uid;
         }
     }
 
-    if (iterator_shop == _shops.end())
-        return 1;
+    if (answer_uid == -1)
+        throw Error::ALL_SHOP_EMPTY;
 
-    for (auto it = _items.begin(); it != _items.end(); it++)
-    {
-        if ((*it).getUID() == item_UID)
-        {
-            iterator_item = it;
-            break;
-        }
-    }
+    return answer_uid;
+}
 
-    if (iterator_item == _items.end())
-        return 2;
+void Ecosystem::shipment(const int shop_UID, const int item_UID, const int count, const int price)
+{
+    if (shop_UID < 0 || shop_UID >= _shops.size())
+        throw Error::INCORRECT_SHOP_UID;
+    else if (item_UID < 0 || item_UID >= _items.size())
+        throw Error::INCORRECT_ITEM_UID;
+    else if (count <= 0)
+        throw Error::INCORRECT_COUNT;
+    else if (price <= 0)
+        throw Error::INCORRECT_PRICE;
 
-    try 
-    {
-        auto& item = (*iterator_shop).getItems(item_UID);
-
-        item.second.first += count;
-        item.second.second = price;
-    }
-    catch (int ex)
-    {
-        (*iterator_shop).addItem((*iterator_item), count, price);
-    }
-    return 0;
+    _shops[shop_UID].shipment(_items[item_UID], count, price);
 }
 
 void Ecosystem::showSystem() const
 {
-    for (auto it = _items.begin(); it != _items.end(); it++)
-        std::cout << (*it) << std::endl;
-    std::cout << "===========================" << std::endl;
+    for (auto& item : _items)
+        std::cout << item << std::endl;
+    std::cout << "----------------------------------" << std::endl;
 
-    for (auto it = _shops.begin(); it != _shops.end(); it++)
-    {
-        std::cout << (*it) << "-------------------------" << std::endl;
-    }
+    for (auto& shop : _shops)
+        std::cout << shop << std::endl;
 }
 
-int Ecosystem::getCheapShop(const int& item_UID) const
+void Ecosystem::showShop(const int shop_UID) const
 {
-    if (item_UID <= 0 || item_UID > _items.size())
-        return -1;
-    if (_shops.size() == 0)
-        return -2;
+    if (shop_UID < 0 || shop_UID >= _shops.size())
+        throw Error::INCORRECT_SHOP_UID;
 
-    int answer_UID = -1, min_price = -1;
-
-    for (auto it = _shops.begin() + 1; it != _shops.end(); it++)
-    {
-        if ((*it).getPriceItem(item_UID) != -1)
-        {
-            if (min_price == -1)
-            {
-                answer_UID = (*it).getUID();
-                min_price = (*it).getPriceItem(item_UID);
-                continue;
-            }
-
-            if ((*it).getPriceItem(item_UID) < min_price)
-            {
-                min_price = (*it).getPriceItem(item_UID);
-                answer_UID = (*it).getUID();
-            }
-        }
-    }
-
-    if (answer_UID == -1)
-        return -3;
-
-    return answer_UID;
-}
-
-int Ecosystem::getCheapShop(const std::vector<std::pair<int, int>> products) const
-{
-    int min_sum = -1, shop_UID = -1;
-
-    for (auto it = products.begin(); it != products.end(); it++)
-        if ((*it).first <= 0 || (*it).first > _items.size() || (*it).second <= 0)
-            return -1;
-
-    // first - item_UID, second - count
-    for (auto shop = _shops.begin(); shop != _shops.end(); shop++)
-    {
-        int sum = 0;
-
-        for (auto it = products.begin(); it != products.end(); it++)
-        {
-            int buffer_sum = sumShipment((*shop).getUID(), (*it).first, (*it).second);
-
-            if (buffer_sum == -1)
-            {
-                sum = -1;
-                break;
-            }
-            else
-                sum += buffer_sum;
-        }
-
-        if (sum != -1)
-        {
-            if (min_sum == -1)
-            {
-                min_sum = sum;
-                shop_UID = (*shop).getUID();
-            }
-            else
-            {
-                if (min_sum > sum)
-                {
-                    min_sum = sum;
-                    shop_UID = (*shop).getUID();
-                }
-            }
-        }
-    }
-
-    return shop_UID;
-}
-
-int Ecosystem::showShop(const int& shop_UID) const
-{
-    if (shop_UID <= 0 || shop_UID > _shops.size())
-        return -1;
-
-    for (auto it = _shops.begin(); it != _shops.end(); it++)
-    {
-        if ((*it).getUID() == shop_UID)
-        {
-            std::cout << (*it) << std::endl;
-            break;
-        }
-    }
-
-    return 0;
-}
-
-int Ecosystem::whichItem(const int& shop_UID, const int& money) const
-{
-    if (shop_UID <= 0 || shop_UID > _shops.size())
-        return -1;
-    
-    for (auto it = _shops.begin(); it != _shops.end(); it++)
-    {
-        if ((*it).getUID() == shop_UID)
-        {
-            auto items = (*it).getAllItems();
-
-            for (auto iterat = items.begin(); iterat != items.end(); iterat++)
-            {
-                if ((*iterat).second.first == 0 || (*iterat).second.second > money)
-                    iterat = items.erase(iterat);
-                else
-                {
-                    int sum = 0, count = 0;
-
-                    for (int i = 0; i < (*iterat).second.first; i++)
-                    {
-                        if (sum + (*iterat).second.second <= money)
-                        {
-                            count = i + 1;
-                            sum += (*iterat).second.second;
-                        }
-                        else
-                            break;
-                    }
-
-                    std::cout << "buy: " << (*iterat).first << "  count: " << count << "  sum: " << sum << std::endl;
-                }
-            }
-        }
-    }
-    return 0;
-}
-
-int Ecosystem::sumShipment(const int& shop_UID, const int& item_UID, const int& count) const
-{
-    if (shop_UID <= 0 || item_UID <= 0 || count <= 0 || shop_UID > _shops.size() || item_UID > _items.size())
-        return -1;
-
-    auto iterator_shop = _shops.end();
-    auto iterator_item = _items.end();
-
-    for (auto it = _shops.begin(); it != _shops.end(); it++)
-    {
-        if ((*it).getUID() == shop_UID)
-        {
-            iterator_shop = it;
-            break;
-        }
-    }
-
-    if (iterator_shop == _shops.end())
-        return -1;
-
-    for (auto it = _items.begin(); it != _items.end(); it++)
-    {
-        if ((*it).getUID() == item_UID)
-        {
-            iterator_item = it;
-            break;
-        }
-    }
-
-    if (iterator_item == _items.end())
-        return -1;
-
-    try 
-    {
-        auto& item = (*iterator_shop).getItems(item_UID);
-
-        if (item.second.first < count)
-            return -1;
-        else
-            return item.second.second * count;
-    }
-    catch (int& ex)
-    {
-        return -1;
-    }
+    std::cout << _shops[shop_UID] << std::endl;
 }
