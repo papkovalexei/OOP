@@ -88,3 +88,27 @@ void Ecosystem::showShop(const int shop_UID) const
 
     std::cout << _shops[shop_UID] << std::endl;
 }
+
+void Ecosystem::countBuyItems(const int shop_UID, const int money) const
+{
+    if (shop_UID < 0 || shop_UID >= _shops.size())
+        throw Error::INCORRECT_SHOP_UID;
+    else if (money <= 0)
+        throw Error::INCORRECT_MONEY;
+
+    for (auto& item : _shops[shop_UID].getAllItem())
+    {
+        int count = 0, count_item = item.second.first;
+        int cash = money;
+
+        while (cash - item.second.second > 0 && count_item> 0)
+        {
+            count_item--;
+            count++;
+            cash -= item.second.second;
+        }
+
+        if (count > 0)
+            std::cout << item.first << " count: " << count << " for the sum " << money - cash << std::endl;
+    }
+}

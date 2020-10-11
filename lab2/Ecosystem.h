@@ -21,6 +21,8 @@ public:
 
     void shipment(const int shop_UID, const int item_UID, const int count, const int price);
 
+    void countBuyItems(const int shop_UID, const int money) const;
+
     void showSystem() const;
     void showShop(const int shop_UID) const;
 

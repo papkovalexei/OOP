@@ -11,6 +11,11 @@ Shop::Shop(const std::string& name, const std::string& address, const int uid)
 
 }
 
+const std::map<Item, std::pair<int, int>>& Shop::getAllItem() const
+{
+    return _items;
+}
+
 int Shop::getUID() const
 {
     return _uid;

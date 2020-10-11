@@ -34,7 +34,8 @@ int main()
     
     system.showSystem();
 
-    system.showShop(system.getCheapShop(items["CPU"]));
+    //system.showShop(system.getCheapShop(items["CPU"]));
+    system.countBuyItems(shops["Diksi"], 200);
 
     return 0;
 }

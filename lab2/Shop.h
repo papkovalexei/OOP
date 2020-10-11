@@ -14,6 +14,8 @@ public:
 
     int getPriceItem(const Item& item) const;
     int getUID() const;
+    const std::map<Item, std::pair<int, int>>& getAllItem() const;
+
     void shipment(const Item& item, const int count, const int price);
 
     friend std::ostream& operator<<(std::ostream& os, const Shop& shop)
