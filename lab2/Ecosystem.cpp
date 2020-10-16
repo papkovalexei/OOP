@@ -27,6 +27,15 @@ int Ecosystem::createItem(const std::string& name)
 
 int Ecosystem::getCheapShop(const int item_UID) const
 {
+    try
+    {
+        checkValidArguments(item_UID, false);
+    }
+    catch(const Error ex)
+    {
+        throw ex;
+    }
+
     if (item_UID < 0 || item_UID >= _items.size())
         throw Error::INCORRECT_ITEM_UID;
 
@@ -59,16 +68,30 @@ int Ecosystem::getCheapShop(const int item_UID) const
 
 void Ecosystem::shipment(const int shop_UID, const int item_UID, const int count, const int price)
 {
-    if (shop_UID < 0 || shop_UID >= _shops.size())
-        throw Error::INCORRECT_SHOP_UID;
-    else if (item_UID < 0 || item_UID >= _items.size())
-        throw Error::INCORRECT_ITEM_UID;
-    else if (count <= 0)
-        throw Error::INCORRECT_COUNT;
-    else if (price <= 0)
-        throw Error::INCORRECT_PRICE;
+    try
+    {
+        checkValidArguments(shop_UID, item_UID, count, price);
+    }
+    catch(const Error ex)
+    {
+        throw ex;
+    }
 
     _shops[shop_UID].shipment(_items[item_UID], count, price);
+}
+
+void Ecosystem::shipment(const int shop_UID, const int item_UID, const int count)
+{
+    try
+    {
+        checkValidArguments(shop_UID, item_UID, count);
+    }
+    catch(const Error ex)
+    {
+        throw ex;
+    }
+
+    _shops[shop_UID].shipment(_items[item_UID], count);
 }
 
 void Ecosystem::showSystem() const
@@ -83,25 +106,35 @@ void Ecosystem::showSystem() const
 
 void Ecosystem::showShop(const int shop_UID) const
 {
-    if (shop_UID < 0 || shop_UID >= _shops.size())
-        throw Error::INCORRECT_SHOP_UID;
+    try
+    {
+        checkValidArguments(shop_UID, true);
+    }
+    catch(const Error ex)
+    {
+        throw ex;
+    }
 
     std::cout << _shops[shop_UID] << std::endl;
 }
 
 void Ecosystem::countBuyItems(const int shop_UID, const int money) const
 {
-    if (shop_UID < 0 || shop_UID >= _shops.size())
-        throw Error::INCORRECT_SHOP_UID;
-    else if (money <= 0)
-        throw Error::INCORRECT_MONEY;
+    try
+    {
+        checkValidArguments(shop_UID, money);
+    }
+    catch(const Error ex)
+    {
+        throw ex;
+    }
 
     for (auto& item : _shops[shop_UID].getAllItem())
     {
         int count = 0, count_item = item.second.first;
         int cash = money;
 
-        while (cash - item.second.second > 0 && count_item> 0)
+        while (cash - item.second.second > 0 && count_item > 0)
         {
             count_item--;
             count++;
@@ -115,9 +148,16 @@ void Ecosystem::countBuyItems(const int shop_UID, const int money) const
 
 int Ecosystem::buyItems(const int shop_UID, const std::vector<std::pair<int, int>>& items)
 {
-    if (shop_UID < 0 || shop_UID >= _shops.size())
-        throw Error::INCORRECT_SHOP_UID;
-    else if (items.empty())
+    try
+    {
+        checkValidArguments(shop_UID, true);
+    }
+    catch(const Error ex)
+    {
+        throw ex;
+    }
+
+    if (items.empty())
         throw Error::INCORRECT_SHIP;
 
     auto item_in_shop = _shops[shop_UID].getAllItem();
@@ -142,4 +182,43 @@ int Ecosystem::buyItems(const int shop_UID, const std::vector<std::pair<int, int
     _shops[shop_UID].shipment(item_in_shop);
 
     return answer;
+}
+
+void Ecosystem::checkValidArguments(const int shop_UID, const int item_UID, const int count, const int price) const
+{
+    checkValidArguments(shop_UID, item_UID, count);
+
+    if (price <= 0)
+        throw Error::INCORRECT_PRICE;
+}
+
+void Ecosystem::checkValidArguments(const int shop_UID, const int item_UID, const int count) const
+{
+    checkValidArguments(shop_UID, true);
+    checkValidArguments(item_UID, false);
+
+    if (count <= 0)
+        throw Error::INCORRECT_COUNT;
+}
+
+void Ecosystem::checkValidArguments(const int shop_UID, const int money) const
+{
+    checkValidArguments(shop_UID, true);
+
+    if (money <= 0)
+        throw Error::INCORRECT_MONEY;
+}
+
+void Ecosystem::checkValidArguments(const int uid, bool flag) const
+{
+    if (flag)
+    {
+        if (uid < 0 || uid >= _shops.size())
+            throw Error::INCORRECT_SHOP_UID;
+    }
+    else
+    {
+        if (uid < 0 || uid >= _items.size())
+            throw Error::INCORRECT_ITEM_UID;
+    }
 }

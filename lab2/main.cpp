@@ -15,6 +15,7 @@ int main()
     shops["Chip-Dip"]    = system.createShop("Chip-Dip", "Dekabristov 14");
     shops["Pyatorochka"] = system.createShop("Pyatorochka", "Nevsrie 8k1");
     shops["Diksi"]       = system.createShop("Diksi", "Sennaya 8k1");
+    shops["New"]         = system.createShop("New", "fawe");
 
     items["Floor"]  = system.createItem("Floor");
     items["CPU"]    = system.createItem("CPU");
@@ -28,21 +29,15 @@ int main()
     items["Card"]   = system.createItem("Card"); 
 
 
-    for (auto shop = shops.begin(); shop != shops.end(); shop++)
+    /*for (auto shop = shops.begin(); shop != shops.end(); shop++)
         for (auto item = items.begin(); item != items.end(); item++)
-            system.shipment((*shop).second, (*item).second, rand() % 30 + 10, rand() % 100 + 10);
-    
-    system.showShop(shops["Diksi"]);
+            system.shipment((*shop).second, (*item).second, rand() % 30 + 10, rand() % 100 + 10);*/
 
-    std::vector<std::pair<int, int>> buy;
+    system.shipment(shops["New"], items["GP"], 20, 11);
+    system.showShop(shops["New"]);
 
-    buy.push_back(std::pair<int, int>(items["CPU"], 4));
-    buy.push_back(std::pair<int, int>(items["GP"], 7));
-    buy.push_back(std::pair<int, int>(items["Al"], 2));
-
-    std::cout << "Sum: " << system.buyItems(shops["Diksi"], buy) << std::endl;
-
-    system.showShop(shops["Diksi"]);
+    system.shipment(shops["New"], items["GP"], 4);
+    system.showShop(shops["New"]);
 
     //system.showShop(system.getCheapShop(items["CPU"]));
     //system.countBuyItems(shops["Diksi"], 200);

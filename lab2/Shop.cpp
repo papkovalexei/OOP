@@ -34,6 +34,11 @@ void Shop::shipment(const Item& item, const int count, const int price)
     _items[item].second = price;
 }
 
+void Shop::shipment(const Item& item, const int count)
+{
+    _items[item].first += count;
+}
+
 void Shop::shipment(const std::map<Item, std::pair<int, int>>& items)
 {
     _items = items;

@@ -20,6 +20,7 @@ public:
     int createItem(const std::string& name);
 
     void shipment(const int shop_UID, const int item_UID, const int count, const int price);
+    void shipment(const int shop_UID, const int item_UID, const int count);
 
     void countBuyItems(const int shop_UID, const int money) const;
     int buyItems(const int shop_UID, const std::vector<std::pair<int, int>>& items);
@@ -39,6 +40,11 @@ public:
     };
 
 private:
+    void checkValidArguments(const int shop_UID, const int item_UID, const int count, const int price) const;
+    void checkValidArguments(const int shop_UID, const int item_UID, const int count) const;
+    void checkValidArguments(const int shop_UID, const int money) const;
+    void checkValidArguments(const int UID, bool flag) const; // flag = true (shop), false (item)
+
     std::vector<Shop> _shops;
     std::vector<Item> _items;
 };
