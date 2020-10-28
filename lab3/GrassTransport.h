@@ -7,14 +7,17 @@
 
 class GrassTransport : public Transport
 {
-    int getRestInterval() const;
-    int getRestDuration() const;
+public:
+    GrassTransport(float speed, float rest_interval, float rest_duration, std::string name);
 
-    void setRestInterval(int rest_interval);
-    void setRestDuration(int rest_duration);
-private:
-    int _rest_interval;
-    int _rest_duration;
+    float getRestInterval() const;
+    float getRestDuration() const;
+
+    void setRestInterval(float rest_interval);
+    void setRestDuration(float rest_duration);
+protected:
+    float _rest_interval;
+    float _rest_duration;
 };
 
 #endif

@@ -2,35 +2,35 @@
 #define H_RACE
 
 #include <vector>
+#include <algorithm>
+#include <typeinfo>
+#include <iostream>
 
 #include "Transport.h"
+
+#include "AirTransport.h"
+#include "GrassTransport.h"
 
 class Race
 {
 public:
-    enum RaceType
-    {
-        AllGrassRace,
-        AllAirRace,
-        SemiAirGrassRace
-    };
-
     Race();
-    Race(RaceType type, int distance);
+    Race(float distance);
 
-    void setRaceType(RaceType type);
+    float getDistance() const;
 
-    RaceType getRaceType() const;
+    void setDistance(float distance);
 
-    void addTransport(const Transport* transport);
-    Transport run() const;
+    virtual void addTransport(Transport* transport);
+    virtual std::vector<Transport*> run();
 
-private:
-    bool checkValidNewTransport(const Transport* transport);
-
-    int _distance;
-    RaceType _type;
+    enum Error
+    {
+        INCORRECT_TRANSPORT
+    };
+protected:
     std::vector<Transport*> _transport;
+    float _distance;
 };
 
 #endif

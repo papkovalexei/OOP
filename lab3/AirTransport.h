@@ -8,13 +8,13 @@
 class AirTransport : public Transport
 {
 public:
-    int getReducer() const;
-    
-    void setReducer(int coefficient);
+    AirTransport(float speed, float distance_reducer, std::string name);
 
-    const char* getName() const override;
-private:
-    int _distance_reducer;
+    float getReducer() const;
+    
+    void setReducer(float distance_reducer);
+protected:
+    float _distance_reducer;
 };
 
 #endif

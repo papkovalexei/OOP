@@ -7,16 +7,18 @@ class Transport
 {
 public:
     Transport();
-    Transport(int speed);
+    Transport(float speed, std::string name);
     
-    int getSpeed() const;
+    float getSpeed() const;
     std::string getName() const;
 
-    void setSpeed(int speed);
+    void setSpeed(float speed);
     void setName(std::string name);
-private:
+
+    virtual float move(float distance);
+protected:
     std::string _name;
-    int _speed;
+    float _speed;
 };
 
 #endif
