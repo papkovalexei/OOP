@@ -3,11 +3,15 @@
 
 #include <string>
 
+#include "Error.h"
+
 class Transport
 {
 public:
     Transport();
     Transport(float speed, std::string name);
+
+    ~Transport();
     
     float getSpeed() const;
     std::string getName() const;
@@ -16,6 +20,7 @@ public:
     void setName(std::string name);
 
     virtual float move(float distance);
+
 protected:
     std::string _name;
     float _speed;

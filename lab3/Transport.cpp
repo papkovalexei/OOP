@@ -9,6 +9,15 @@ Transport::Transport()
 Transport::Transport(float speed, std::string name)
     : _speed(speed), _name(name)
 {
+    if (speed <= 0)
+    {
+        this->~Transport();
+        throw Error::INCORRECT_SPEED;
+    }
+}
+
+Transport::~Transport()
+{
 
 }
 

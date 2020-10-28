@@ -2,11 +2,20 @@
 
 Race::Race()
 {
-
+    _distance = DISTANCE;
 }
 
 Race::Race(float distance)
     : _distance(distance)
+{
+    if (distance <= 0)
+    {
+        this->~Race();
+        throw Error::INCORRECT_DISTANCE;
+    }
+}
+
+Race::~Race()
 {
 
 }

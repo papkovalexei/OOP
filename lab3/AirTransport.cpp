@@ -3,6 +3,15 @@
 AirTransport::AirTransport(float speed, float distance_reducer, std::string name)
     : Transport(speed, name), _distance_reducer(distance_reducer)
 {
+    if (distance_reducer < 0)
+    {
+        this->~AirTransport();
+        throw Error::INCORRECT_REDUCER;
+    }
+}
+
+AirTransport::~AirTransport()
+{
 
 }
 

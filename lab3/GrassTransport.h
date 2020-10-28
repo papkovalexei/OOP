@@ -10,6 +10,8 @@ class GrassTransport : public Transport
 public:
     GrassTransport(float speed, float rest_interval, float rest_duration, std::string name);
 
+    ~GrassTransport();
+
     float getRestInterval() const;
     float getRestDuration() const;
 

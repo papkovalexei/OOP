@@ -10,6 +10,8 @@ class AirTransport : public Transport
 public:
     AirTransport(float speed, float distance_reducer, std::string name);
 
+    ~AirTransport();
+
     float getReducer() const;
     
     void setReducer(float distance_reducer);

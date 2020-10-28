@@ -11,11 +11,15 @@
 #include "AirTransport.h"
 #include "GrassTransport.h"
 
+#include "Error.h"
+
 class Race
 {
 public:
     Race();
     Race(float distance);
+
+    ~Race();
 
     float getDistance() const;
 
@@ -24,13 +28,11 @@ public:
     virtual void addTransport(Transport* transport);
     virtual std::vector<Transport*> run();
 
-    enum Error
-    {
-        INCORRECT_TRANSPORT
-    };
 protected:
     std::vector<Transport*> _transport;
     float _distance;
+
+    const float DISTANCE = 100;
 };
 
 #endif
