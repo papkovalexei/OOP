@@ -6,18 +6,7 @@ Stupa::Stupa()
 
 }
 
-float Stupa::move(float distance)
+float Stupa::reducer(float distance)
 {
-    float now_pos = 0, time = 0;
-
-    distance *= (100.0 - _distance_reducer) / 100.0;
-
-    while (now_pos < distance)
-    {
-
-        time++;
-        now_pos += _speed;
-    }
-
-    return time;
+    return distance * (100 - _distance_reducer) / 100.0;
 }

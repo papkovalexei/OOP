@@ -8,7 +8,7 @@ class MagicCarpet : public AirTransport
 public:
     MagicCarpet();
 
-    float move(float distance) override;
+    float reducer(float distance) override;
 };
 
 #endif

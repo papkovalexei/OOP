@@ -8,7 +8,7 @@ class Broom : public AirTransport
 public:
     Broom();
 
-    float move(float distance) override;
+    float reducer(float distance) override;
 };
 
 #endif

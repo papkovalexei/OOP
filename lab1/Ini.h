@@ -2,6 +2,7 @@
 #include <exception>
 #include <vector>
 #include <fstream>
+#include <map>
 
 #include "Section.h"
 
@@ -22,7 +23,8 @@ public:
     {
         SUCCESS,
         DONT_SECTION,
-        DONT_VARIABLE
+        DONT_VARIABLE,
+        ERROR
     };
 
     Ini();
@@ -42,6 +44,6 @@ private:
     ErrorData getVariable(const std::string& section, const std::string& variable, std::string& answer) const;
     ErrorParser parse(const std::string& path);
 
-    std::vector<Section> _data;
+    std::map<std::string, Section> _data;
     bool flag_okay;
 };

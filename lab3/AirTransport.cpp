@@ -24,3 +24,10 @@ void AirTransport::setReducer(float distance_reducer)
 {
     _distance_reducer = distance_reducer;
 }
+
+float AirTransport::move(float distance)
+{
+    distance = reducer(distance);
+
+    return distance / _speed;
+}

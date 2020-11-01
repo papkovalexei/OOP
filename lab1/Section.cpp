@@ -5,12 +5,6 @@ Section::Section()
     _name = "";
 }
 
-Section::Section(const std::string& name, const std::vector<std::pair<std::string, std::string>>& variable_data)
-{
-    _name = name;
-    _variable_data = variable_data;
-}
-
 Section::Section(const std::string& name)
 {
     _name = name;
@@ -26,9 +20,12 @@ void Section::setName(const std::string& name)
     _name = name;
 }
 
-void Section::addVariable(const std::pair<std::string, std::string>& variable)
+bool Section::addVariable(const std::pair<std::string, std::string>& variable)
 {
-    _variable_data.push_back(variable);
+    if (_variable_data.count(variable.first) != 0)
+        return false;
+    _variable_data[variable.first] = variable.second;
+    return true;
 }
 
 size_t Section::size() const
@@ -36,7 +33,7 @@ size_t Section::size() const
     return _variable_data.size();
 }
 
-const std::pair<std::string, std::string>& Section::operator[](size_t position) const
+std::map<std::string, std::string> Section::getData() const
 {
-    return _variable_data[position];
+    return _variable_data;
 }

@@ -6,22 +6,16 @@ Centaur::Centaur()
 
 }
 
-float Centaur::move(float distance)
+float Centaur::rest(float distance)
 {
-    float now_pos = 0, time = 0, time_to_rest = 0;
+    float time = distance / _speed;
 
-    while (now_pos < distance)
+    if (time >= 8)
     {
-        now_pos += _speed;
-        time++;
-        time_to_rest++;
+        time = (int)time - ((int)time % (int)_rest_interval);
 
-        if (time_to_rest >= _rest_interval)
-        {
-            time_to_rest = 0;
-            time += _rest_duration;
-        }
+        return _rest_duration * (time / _rest_interval); 
     }
 
-    return time;
+    return 0;
 }

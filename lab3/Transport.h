@@ -19,7 +19,7 @@ public:
     void setSpeed(float speed);
     void setName(std::string name);
 
-    virtual float move(float distance);
+    virtual float move(float distance) = 0;
 
 protected:
     std::string _name;

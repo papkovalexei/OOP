@@ -17,6 +17,9 @@ public:
 
     void setRestInterval(float rest_interval);
     void setRestDuration(float rest_duration);
+
+    virtual float rest(float distance) = 0;
+    float move(float distance) override;
 protected:
     float _rest_interval;
     float _rest_duration;

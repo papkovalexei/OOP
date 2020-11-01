@@ -6,23 +6,24 @@ SpeedBoots::SpeedBoots()
 
 }
 
-float SpeedBoots::move(float distance)
+float SpeedBoots::rest(float distance)
 {
-    float now_pos = 0, time = 0, time_to_rest = 0;
+    float time = distance / _speed;
+    float answer = 0;
 
-    while (now_pos < distance)
+    if (time >= _rest_interval)
     {
-        now_pos += _speed;
-        time++;
-        time_to_rest++;
-
-        if (time_to_rest >= _rest_interval)
-        {
-            time_to_rest = 0;
-            time += _rest_duration;
-            _rest_duration = 5;
-        }
+        answer = _rest_duration;
+        _rest_duration = 5;
+        time -= _rest_interval;
     }
 
-    return time;
+    if (time >= _rest_interval)
+    {
+        time = (int)time - ((int)time % (int)_rest_interval);
+
+        answer += _rest_duration * (time / _rest_interval);
+    }
+
+    return answer;
 }

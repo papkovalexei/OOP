@@ -8,7 +8,7 @@ class Stupa : public AirTransport
 public:
     Stupa();
 
-    float move(float distance) override;
+    float reducer(float distance) override;
 };
 
 #endif

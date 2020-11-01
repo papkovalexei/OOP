@@ -40,8 +40,3 @@ void Transport::setName(std::string name)
 {
     this->_name = name;
 }
-
-float Transport::move(float distance)
-{
-    return 0;
-}

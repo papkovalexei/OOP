@@ -8,7 +8,7 @@ class BactrianCamel : public GrassTransport
 public:
     BactrianCamel();
 
-    float move(float distance) override;
+    float rest(float distance) override;
 };
 
 #endif

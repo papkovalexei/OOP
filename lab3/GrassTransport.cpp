@@ -40,3 +40,8 @@ void GrassTransport::setRestDuration(float rest_duration)
 {
     _rest_duration = rest_duration;
 }
+
+float GrassTransport::move(float distance)
+{
+    return distance / _speed + rest(distance);
+}

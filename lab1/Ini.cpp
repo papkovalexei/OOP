@@ -41,6 +41,7 @@ Ini::ErrorParser Ini::parse(const std::string& path)
 {
 
     std::ifstream input(path);
+    std::string now_sect = "";
 
     if (input.is_open())
     {
@@ -68,10 +69,20 @@ Ini::ErrorParser Ini::parse(const std::string& path)
                                 break;
                             }
                         }
-                        _data.push_back(Section(buffer));
+                        {
+                            if (_data.count(str) != 0)
+                                return COLLISION_NAME;
+                            now_sect = buffer;
+                            _data[buffer].setName(buffer);
+                        }
                     }
                     else
-                        _data.push_back(Section(str));
+                    {
+                        if (_data.count(str) != 0)
+                                return COLLISION_NAME;
+                        _data[str].setName(str);  
+                        now_sect = str;
+                    }
                 }
                 else
                 {
@@ -115,14 +126,12 @@ Ini::ErrorParser Ini::parse(const std::string& path)
                             else
                                 variable.first += str[i];
                         }
+                    
 
-                        for (int j = 0; j < _data[_data.size() - 1].size(); j++)
+                        if (!_data[now_sect].addVariable(variable))
                         {
-                            if (_data[_data.size() - 1][j].first == variable.first)
-                                return COLLISION_NAME;
+                            return COLLISION_NAME;
                         }
-
-                        _data[_data.size() - 1].addVariable(variable);
                     }
                     else
                     {
@@ -148,13 +157,14 @@ Ini::ErrorParser Ini::parse(const std::string& path)
 
 void Ini::show() const
 {
-    for (int i = 0; i < _data.size(); i++)
+    for (auto it = _data.begin(); it != _data.end(); it++)
     {
-        std::cout << _data[i].getName() << std::endl;
-
-        for (int j = 0; j < _data[i].size(); j++)
-            std::cout << _data[i][j].first << "=" << _data[i][j].second << std::endl;
-        std::cout << std::endl;
+        std::cout << (*it).first;
+    
+        for (auto it1 = (*it).second.getData().begin(); it1 != (*it).second.getData().end(); it++)
+        {
+            std::cout << (*it1).first << "=" << (*it1).second << std::endl;
+        }
     }
 }
 
@@ -198,32 +208,28 @@ Ini::ErrorData Ini::getVariable(const std::string& section, const std::string& v
     int code = 0;
     Section need_section;
 
-    for (int i = 0; i < _data.size(); i++)
+    if (_data.find(section) != _data.end())
     {
-        if (_data[i].getName() == section)
+        flag_section = true;
+        need_section = (*_data.find(section)).second;
+    }
+
+    if (flag_section)
+    {
+        if (need_section.getData().find(variable) != need_section.getData().end())
         {
-            flag_section = true;
-            need_section = _data[i];
-            break;
+            flag_variable = true;
+            answer = (*need_section.getData().find(variable)).second;
         }
     }
-    
-    if (flag_section)
-        for (int i = 0; i < need_section.size(); i++)
-        {
-            if (need_section[i].first == variable)
-            {
-                flag_variable = true;
-            
-                answer = need_section[i].second;
-            }
-        }
+       
     if (flag_variable && flag_section)
         return ErrorData::SUCCESS;
     else if (!flag_variable)
         return ErrorData::DONT_VARIABLE;
     else if (!flag_section)
         return ErrorData::DONT_SECTION;
+    return ErrorData::ERROR;
 }
 
 std::string Ini::getString(const std::string& section, const std::string& variable) const
@@ -233,9 +239,15 @@ std::string Ini::getString(const std::string& section, const std::string& variab
     ErrorData code = getVariable(section, variable, answer);
 
     if (code == ErrorData::DONT_SECTION)
+    {
         std::cerr << "Doesn't exists section: " << section << std::endl;
+        throw ErrorData::DONT_SECTION;
+    }
     else if (code == ErrorData::DONT_VARIABLE)
+    {
         std::cerr << "Doesn't exists variable: " << variable << std::endl;
+        throw ErrorData::DONT_VARIABLE;
+    }
     return answer;
 }
 
@@ -250,16 +262,25 @@ float Ini::getFloat(const std::string& section, const std::string& variable) con
         if (isFloatNumber(answer))
             return std::atof(answer.c_str());
         else
+        {
             std::cerr << section << "::" << variable << ": not float" << std::endl;
+            throw ErrorData::ERROR;
+        }
     }
     else if (code == ErrorData::DONT_SECTION)
+    {
         std::cerr << "Doesn't exists section: " << section << std::endl;
+        throw ErrorData::DONT_SECTION;
+    }
     else if (code == ErrorData::DONT_VARIABLE)
+    {
         std::cerr << "Doesn't exists variable: " << variable << std::endl;
+        throw ErrorData::DONT_SECTION;
+    }
     return 0.0;
 }
 
-int Ini::getInteger(const std::string& section, const std::string& variable) const
+int Ini::getInteger(const std::string& section, const std::string& variable)const
 {
     std::string answer;
 
@@ -270,12 +291,21 @@ int Ini::getInteger(const std::string& section, const std::string& variable) con
         if (isIntegerNumber(answer))
             return std::atoi(answer.c_str());
         else
+        {
             std::cerr << section << "::" << variable << ": not integer" << std::endl;
+            throw ErrorData::ERROR;
+        }
     }
     else if (code == ErrorData::DONT_SECTION)
+    {
         std::cerr << "Doesn't exists section: " << section << std::endl;
+        throw ErrorData::DONT_SECTION;
+    }
     else if (code == ErrorData::DONT_VARIABLE)
+    {
         std::cerr << "Doesn't exists variable: " << variable << std::endl;
+        throw ErrorData::DONT_VARIABLE;
+    }
 
     return 0;
 }

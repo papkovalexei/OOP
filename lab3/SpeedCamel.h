@@ -8,7 +8,7 @@ class SpeedCamel : public GrassTransport
 public:
     SpeedCamel();
 
-    float move(float distance) override;
+    float rest(float distance) override;
 };
 
 #endif

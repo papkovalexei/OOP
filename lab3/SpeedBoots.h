@@ -8,7 +8,7 @@ class SpeedBoots : public GrassTransport
 public:
     SpeedBoots();
 
-    float move(float distance) override;
+    float rest(float distance) override;
 };
 
 #endif

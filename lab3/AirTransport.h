@@ -15,6 +15,10 @@ public:
     float getReducer() const;
     
     void setReducer(float distance_reducer);
+
+    virtual float reducer(float distance) = 0;
+    float move(float distance) override;
+
 protected:
     float _distance_reducer;
 };
