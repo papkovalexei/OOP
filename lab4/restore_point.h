@@ -34,6 +34,16 @@ public:
         return _prev_id;
     }
 
+    time_t get_time() const
+    {
+        return _creation_time;
+    }
+
+    int get_size() const
+    {
+        return _size;
+    }
+
     const std::vector<file>&  get_files() const
     {
         return _files;

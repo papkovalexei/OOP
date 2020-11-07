@@ -34,7 +34,7 @@ int main()
 
     sys.print_backup(id);
 
-    sys.clean_restore_point_count(id, 4);
+    sys.clear_restore_point_count(id, 4);
 
     return 0;
 }

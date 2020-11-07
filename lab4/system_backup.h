@@ -55,7 +55,7 @@ public:
         std::cout << _backups[id];
     }
 
-    int clean_restore_point_count(int id, int count)
+    int clear_restore_point_count(int id, int count)
     {
         auto& points = _backups[id].get_all_points();
         int buffer_count = 0, offset = 0;
@@ -74,14 +74,85 @@ public:
                 break;
             }
             else
+            {
                 buffer_count++;
+
+                if (i == 0)
+                    offset = -2;
+            }
         }
 
-        std::cout << offset << " offset\n";
         return offset;
     }
 
+    int clear_restore_point_time(int id, time_t time)
+    {
+        auto& points = _backups[id].get_all_points();
+        int offset = 0;
 
+        for (int i = points.size() - 1; i >= 0; i--)
+        {
+            if (points[i].get_time() < time)
+            {
+                while (points[i].get_prev_id() != -1)
+                    i--;
+
+                offset = i - 1;
+                break;
+            }
+            else
+            {
+                 if (i == 0)
+                    offset = -2;
+            }
+        }
+
+        return offset;
+    }
+
+    int clear_restore_point_size(int id, int size)
+    {
+        auto& points = _backups[id].get_all_points();
+        int offset = 0, sum_size = 0;
+
+        for (int i = points.size() - 1; i >= 0; i--)
+        {
+            if (sum_size + points[i].get_size() > size)
+            {
+                while (points[i].get_prev_id() != -1)
+                {
+                    sum_size += points[i].get_size();
+                    i--;
+                }
+
+                offset = i - 1;
+                break;
+            }
+            else if (sum_size + points[i].get_size() == size)
+            {
+                sum_size += points[i].get_size();
+                i--;
+
+                while (points[i].get_prev_id() != -1)
+                {
+                    sum_size += points[i].get_size();
+                    i--;
+                }
+
+                offset = i - 1;
+                break;
+            }
+            else
+            {
+                sum_size += points[i].get_size();
+
+                 if (i == 0)
+                    offset = -2;
+            }
+        }
+
+        return offset;
+    }
 
 private:
     static int _id_put;
