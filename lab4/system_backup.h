@@ -3,12 +3,16 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 #include "backup.h"
 
 #define MODE_COUNT 1
 #define MODE_DATE 2
 #define MODE_SIZE 4
+
+#define WHEN_ALL 1
+#define WHEN_ONE 2
 
 class system_backup
 {
@@ -59,34 +63,50 @@ public:
     void clear_restore_point_count(int id, int count)
     {
         int offset = _clear_restore_point_count(id, count);
-        _check_offset(id, offset);
         _remove_restore(id, offset);
     }
 
     void clear_restore_point_time(int id, time_t time)
     {
         int offset = _clear_restore_point_time(id, time);
-        _check_offset(id, offset);
         _remove_restore(id, offset);
     }
 
     void clear_restore_point_size(int id, int size)
     {
         int offset = _clear_restore_point_size(id, size);
-        std::cout << offset << " offset\n";
-        _check_offset(id, offset);
         _remove_restore(id, offset);
     }
 
-private:
-    void _check_offset(int id, int offset)
+    void clear_gybrid_restore_point(int id, int mode, int when, time_t time, int size, int count)
     {
-        if (offset == -1)
+        std::vector<int> points_offset;
+
+        if (mode | MODE_COUNT == mode)
         {
-            std::cerr << "Some problems in backup: " << id << std::endl << "Don't can delete restore" << std::endl; 
+            points_offset.push_back(_clear_restore_point_count(id, count));
+            std::cout << "Offset: " << points_offset[points_offset.size() - 1] << std::endl;
         }
+
+        if (mode | MODE_DATE == mode)
+            points_offset.push_back(_clear_restore_point_time(id, time));
+
+        if (mode | MODE_SIZE == mode)
+        {
+            points_offset.push_back(_clear_restore_point_size(id, size));
+        }
+
+        int point_remove;
+
+        if (when == WHEN_ALL)
+            point_remove = (*std::min_element(points_offset.begin(), points_offset.end()));
+        else
+            point_remove = (*std::max_element(points_offset.begin(), points_offset.end()));
+        std::cout << "point remove: " << point_remove << std::endl;
+        _remove_restore(id, point_remove);
     }
 
+private:
     void _remove_restore(int id, int offset)
     {
         auto& points = _backups[id].get_all_points();
@@ -102,11 +122,12 @@ private:
 
         for (int i = points.size() - 1; i >= 0; i--)
         {
-            if (buffer_count == count)
+            if (buffer_count + 1 == count)
             {
                 while (points[i].get_prev_id() != -1)
                 {
                     buffer_count++;
+                    std::cerr << "Restore problems in backup: " << id << std::endl;
                     i--;
                 }
 
@@ -135,7 +156,10 @@ private:
             if (points[i].get_time() < time)
             {
                 while (points[i].get_prev_id() != -1)
+                {
+                    std::cerr << "Restore problems in backup: " << id << std::endl;
                     i--;
+                }
 
                 offset = i - 1;
                 break;
@@ -162,6 +186,7 @@ private:
                 while (points[i].get_prev_id() != -1)
                 {
                     sum_size += points[i].get_size();
+                    std::cerr << "Restore problems in backup: " << id << std::endl;
                     i--;
                 }
 
@@ -176,6 +201,7 @@ private:
                 while (points[i].get_prev_id() != -1)
                 {
                     sum_size += points[i].get_size();
+                    std::cerr << "Restore problems in backup: " << id << std::endl;
                     i--;
                 }
 

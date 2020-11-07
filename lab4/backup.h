@@ -42,11 +42,7 @@ public:
             _new_files.clear();
         }
 
-        if (_points.empty())
-            _points.push_back(restore_point(_files, 0));
-        else
-            _points.push_back(restore_point(_files, _points.size() - 1));
-
+        _points.push_back(restore_point(_files, _points.size()));
     }
 
     void create_restore_point_increment()
@@ -59,7 +55,7 @@ public:
 
         save_file();
 
-        _points.push_back(restore_point(_new_files, _points.size() - 1, _points[_points.size() - 1].get_id()));
+        _points.push_back(restore_point(_new_files, _points.size(), _points[_points.size() - 1].get_id()));
 
         for (auto& file : _new_files)
             _files.push_back(file);

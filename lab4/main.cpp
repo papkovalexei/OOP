@@ -27,14 +27,13 @@ int main()
     sys.create_restore_point_base(id);
 
     sys.add_file(id, file("new2.txt", 13));
-    sys.create_restore_point_base(id);
+    sys.create_restore_point_increment(id);
 
     sys.add_file(id, file("new3.txt", 13));
-    sys.create_restore_point_base(id);
+    sys.create_restore_point_increment(id);
 
     //sys.print_backup(id);
-
-    sys.clear_restore_point_size(id, 30);
+    sys.clear_gybrid_restore_point(id, MODE_SIZE | MODE_COUNT, WHEN_ONE, 0, 14000, 2);
 
     sys.print_backup(id);
 
