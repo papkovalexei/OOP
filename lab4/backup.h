@@ -85,6 +85,11 @@ public:
         }
     }
 
+    std::vector<restore_point>& get_all_points()
+    {
+        return _points;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const backup& back)
     {
         time_t cast_time = back._creation_time;

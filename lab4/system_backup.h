@@ -55,10 +55,33 @@ public:
         std::cout << _backups[id];
     }
 
-    int clean_restore_point(int id, int mode)
+    int clean_restore_point_count(int id, int count)
     {
-        return 1;
+        auto& points = _backups[id].get_all_points();
+        int buffer_count = 0, offset = 0;
+
+        for (int i = points.size() - 1; i >= 0; i--)
+        {
+            if (buffer_count == count)
+            {
+                while (points[i].get_prev_id() != -1)
+                {
+                    buffer_count++;
+                    i--;
+                }
+
+                offset = i - 1;
+                break;
+            }
+            else
+                buffer_count++;
+        }
+
+        std::cout << offset << " offset\n";
+        return offset;
     }
+
+
 
 private:
     static int _id_put;

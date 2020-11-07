@@ -19,12 +19,22 @@ int main()
 
     sys.remove_file(id, file("File1.txt", 20));
 
+    sys.create_restore_point_base(id); // save file
+
+    sys.add_file(id, file("new.txt", 13)); // can change list files
+
+    sys.create_restore_point_increment(id); // save new file
     sys.create_restore_point_base(id);
 
-    sys.add_file(id, file("new.txt", 13));
+    sys.add_file(id, file("new2.txt", 13));
+    sys.create_restore_point_increment(id);
+
+    sys.add_file(id, file("new2.txt", 132));
     sys.create_restore_point_increment(id);
 
     sys.print_backup(id);
+
+    sys.clean_restore_point_count(id, 4);
 
     return 0;
 }

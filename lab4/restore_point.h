@@ -20,11 +20,18 @@ public:
     restore_point(const std::vector<file>& files, int id, int prev_id)
         : _files(files), _creation_time(time(0)), _size(0), _id(id), _prev_id(prev_id)
     {
+        for (auto& file : files)
+            _size += file.size;
     }
 
     int get_id() const
     {
         return _id;
+    }
+
+    int get_prev_id() const
+    {
+        return _prev_id;
     }
 
     const std::vector<file>&  get_files() const
