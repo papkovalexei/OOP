@@ -23,9 +23,9 @@ public:
         
     }
 
-    int create_backup(const std::vector<file>& files)
+    int create_backup(const std::vector<file>& files, int mode_storage)
     {
-        _backups.push_back(backup(files, _id_put));
+        _backups[_id_put] = backup(files, _id_put, mode_storage);
 
         return _id_put++;
     }
@@ -35,7 +35,7 @@ public:
         _backups[id].create_restore_point_base();
     }
 
-    void create_restor_point_increment(int id)
+    void create_restore_point_increment(int id)
     {
         _backups[id].create_restore_point_increment();   
     }
@@ -50,7 +50,7 @@ public:
         _backups[id].remove_file(file_);
     }
 
-    void print_backup(int id) const
+    void print_backup(int id)
     {
         std::cout << _backups[id];
     }
@@ -62,7 +62,7 @@ public:
 
 private:
     static int _id_put;
-    std::vector<backup> _backups;
+    std::map<int, backup> _backups;
 };
 
 int system_backup::_id_put = 0;

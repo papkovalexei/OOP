@@ -6,9 +6,15 @@
 #include <ctime>
 #include <set>
 #include <map>
+#include <fstream>
 
 #include "file.h"
 #include "restore_point.h"
+
+
+#define SEPARATE_STORAGE 1
+#define ARCHIVE_STORAGE 2
+
 
 class backup
 {
@@ -18,8 +24,8 @@ public:
 
     }
 
-    backup(const std::vector<file>& files, int id)
-        : _new_files(files), _creation_time(time(0)), _backup_size(0), _id(id)
+    backup(const std::vector<file>& files, int id, int mode)
+        : _new_files(files), _creation_time(time(0)), _backup_size(0), _id(id), _mode(mode)
     {
         for (auto& file : files)
             _backup_size += file.size;
@@ -27,6 +33,8 @@ public:
 
     void create_restore_point_base()
     {
+        save_file();
+
         if (!_new_files.empty())
         {
             for (auto& file : _new_files)
@@ -38,6 +46,7 @@ public:
             _points.push_back(restore_point(_files, 0));
         else
             _points.push_back(restore_point(_files, _points.size() - 1));
+
     }
 
     void create_restore_point_increment()
@@ -48,6 +57,8 @@ public:
             return;
         }
 
+        save_file();
+
         _points.push_back(restore_point(_new_files, _points.size() - 1, _points[_points.size() - 1].get_id()));
 
         for (auto& file : _new_files)
@@ -57,6 +68,7 @@ public:
 
     void add_file(const file& file_)
     {
+        _backup_size += file_.size;
         _new_files.push_back(file_);
     }
 
@@ -66,6 +78,7 @@ public:
         {
             if ((*it) == file_)
             {
+                _backup_size -= file_.size;
                 _new_files.erase(it);
                 break;
             }
@@ -90,10 +103,27 @@ public:
     }
 
 private:
+    void save_file()
+    {
+        std::ofstream log("backuplog", std::ios::app);
+
+        if (_mode == SEPARATE_STORAGE)
+        {
+            for (auto& file : _new_files)
+                log << "Save " << file << std::endl;
+        }
+        else
+        {
+            log << "New file: backup " << std::endl << _backup_size << " kb" << std::endl;
+        }
+
+        log.close();
+    }
+
     std::vector<file> _files;
     std::vector<file> _new_files;
     std::vector<restore_point> _points;
-    int _id, _backup_size;
+    int _id, _backup_size, _mode;
     time_t _creation_time;
 };
 
