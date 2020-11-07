@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <ctime>
+#include <iostream>
 
 #include "file.h"
 
@@ -29,6 +30,24 @@ public:
     const std::vector<file>&  get_files() const
     {
         return _files;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const restore_point& point)
+    {
+        time_t cast_time = point._creation_time;
+
+        os << "Time create: " << ctime(&cast_time);
+        os << "ID: " << point._id << "   Size: " << point._size << std::endl;
+
+        if (point._prev_id == -1)
+            os << "Basic point" << std::endl;
+        else
+            os << "Inc. point, prevID: " << point._prev_id << std::endl;
+
+        for (auto& file : point._files)
+            os << file << std::endl;
+
+        return os;
     }
 
 private:

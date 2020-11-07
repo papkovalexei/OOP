@@ -6,6 +6,10 @@
 
 #include "backup.h"
 
+#define MODE_COUNT 1
+#define MODE_DATE 2
+#define MODE_SIZE 4
+
 class system_backup
 {
 public:
@@ -36,9 +40,24 @@ public:
         _backups[id].create_restore_point_increment();   
     }
 
+    void add_file(int id, const file& file_)
+    {
+        _backups[id].add_file(file_);
+    }
+
+    void remove_file(int id, const file& file_)
+    {
+        _backups[id].remove_file(file_);
+    }
+
     void print_backup(int id) const
     {
         std::cout << _backups[id];
+    }
+
+    int clean_restore_point(int id, int mode)
+    {
+        return 1;
     }
 
 private:

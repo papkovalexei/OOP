@@ -5,6 +5,7 @@
 #include <vector>
 #include <ctime>
 #include <set>
+#include <map>
 
 #include "file.h"
 #include "restore_point.h"
@@ -18,7 +19,7 @@ public:
     }
 
     backup(const std::vector<file>& files, int id)
-        : _files(files), _creation_time(time(0)), _backup_size(0), _id(id)
+        : _new_files(files), _creation_time(time(0)), _backup_size(0), _id(id)
     {
         for (auto& file : files)
             _backup_size += file.size;
@@ -47,7 +48,7 @@ public:
             return;
         }
 
-        _points.push_back(restore_point(_files, _points.size() - 1, _points[_points.size() - 1].get_id()));
+        _points.push_back(restore_point(_new_files, _points.size() - 1, _points[_points.size() - 1].get_id()));
 
         for (auto& file : _new_files)
             _files.push_back(file);
@@ -59,6 +60,18 @@ public:
         _new_files.push_back(file_);
     }
 
+    void remove_file(const file& file_)
+    {
+        for (auto it = _new_files.begin(); it != _new_files.end(); it++)
+        {
+            if ((*it) == file_)
+            {
+                _new_files.erase(it);
+                break;
+            }
+        }
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const backup& back)
     {
         time_t cast_time = back._creation_time;
@@ -66,10 +79,12 @@ public:
         os << "Time create: " << ctime(&cast_time);
         os << "ID: " << back._id << "   Size: " << back._backup_size << std::endl;
 
-        for (auto file : back._files)
-        {
+        for (auto& file : back._files)
             os << file << std::endl;
-        }
+        os << "--------------------------------" << std::endl;
+
+        for (auto& point : back._points)
+            os << point << "--------------------" << std::endl;
 
         return os;
     }

@@ -17,6 +17,13 @@ int main()
 
     int id = sys.create_backup(files);
 
+    sys.remove_file(id, file("File1.txt", 20));
+
+    sys.create_restore_point_base(id);
+
+    sys.add_file(id, file("new.txt", 13));
+    sys.create_restor_point_increment(id);
+
     sys.print_backup(id);
 
     return 0;
