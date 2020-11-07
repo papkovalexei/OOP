@@ -55,7 +55,47 @@ public:
         std::cout << _backups[id];
     }
 
-    int clear_restore_point_count(int id, int count)
+
+    void clear_restore_point_count(int id, int count)
+    {
+        int offset = _clear_restore_point_count(id, count);
+        _check_offset(id, offset);
+        _remove_restore(id, offset);
+    }
+
+    void clear_restore_point_time(int id, time_t time)
+    {
+        int offset = _clear_restore_point_time(id, time);
+        _check_offset(id, offset);
+        _remove_restore(id, offset);
+    }
+
+    void clear_restore_point_size(int id, int size)
+    {
+        int offset = _clear_restore_point_size(id, size);
+        std::cout << offset << " offset\n";
+        _check_offset(id, offset);
+        _remove_restore(id, offset);
+    }
+
+private:
+    void _check_offset(int id, int offset)
+    {
+        if (offset == -1)
+        {
+            std::cerr << "Some problems in backup: " << id << std::endl << "Don't can delete restore" << std::endl; 
+        }
+    }
+
+    void _remove_restore(int id, int offset)
+    {
+        auto& points = _backups[id].get_all_points();
+
+        for (int i = 0; i <= offset; i++)
+            points.erase(points.begin());
+    }
+
+    int _clear_restore_point_count(int id, int count)
     {
         auto& points = _backups[id].get_all_points();
         int buffer_count = 0, offset = 0;
@@ -85,7 +125,7 @@ public:
         return offset;
     }
 
-    int clear_restore_point_time(int id, time_t time)
+    int _clear_restore_point_time(int id, time_t time)
     {
         auto& points = _backups[id].get_all_points();
         int offset = 0;
@@ -110,7 +150,7 @@ public:
         return offset;
     }
 
-    int clear_restore_point_size(int id, int size)
+    int _clear_restore_point_size(int id, int size)
     {
         auto& points = _backups[id].get_all_points();
         int offset = 0, sum_size = 0;
@@ -154,7 +194,7 @@ public:
         return offset;
     }
 
-private:
+
     static int _id_put;
     std::map<int, backup> _backups;
 };
