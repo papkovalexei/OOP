@@ -59,7 +59,6 @@ public:
         std::cout << _backups[id];
     }
 
-
     void clear_restore_point_count(int id, int count)
     {
         int offset = _clear_restore_point_count(id, count);
@@ -105,7 +104,6 @@ public:
         std::cout << "point remove: " << point_remove << std::endl;
         _remove_restore(id, point_remove);
     }
-
 private:
     void _remove_restore(int id, int offset)
     {
@@ -127,7 +125,7 @@ private:
                 while (points[i].get_prev_id() != -1)
                 {
                     buffer_count++;
-                    std::cerr << "Restore problems in backup: " << id << std::endl;
+                    std::cerr << "Restore problems in backup(count): " << id << std::endl;
                     i--;
                 }
 
@@ -157,7 +155,7 @@ private:
             {
                 while (points[i].get_prev_id() != -1)
                 {
-                    std::cerr << "Restore problems in backup: " << id << std::endl;
+                    std::cerr << "Restore problems in backup(time): " << id << std::endl;
                     i--;
                 }
 
@@ -183,28 +181,40 @@ private:
         {
             if (sum_size + points[i].get_size() > size)
             {
+                int buffer_offset = 0;
+
                 while (points[i].get_prev_id() != -1)
                 {
+                    buffer_offset = 1;
                     sum_size += points[i].get_size();
-                    std::cerr << "Restore problems in backup: " << id << std::endl;
+                    std::cerr << "Restore problems in backup(size): " << id << std::endl;
                     i--;
                 }
 
-                offset = i - 1;
+                offset = i - buffer_offset;
                 break;
             }
             else if (sum_size + points[i].get_size() == size)
             {
-                sum_size += points[i].get_size();
-                i--;
-
-                while (points[i].get_prev_id() != -1)
+                if (points[i].get_prev_id() == -1)
                 {
                     sum_size += points[i].get_size();
-                    std::cerr << "Restore problems in backup: " << id << std::endl;
                     i--;
                 }
-
+                else
+                {
+                    bool flag_warning = true;
+                    while (points[i].get_prev_id() != -1)
+                    {
+                        sum_size += points[i].get_size();
+                        if (flag_warning)
+                        {
+                            std::cerr << "Restore problems in backup(size): " << id << std::endl;
+                            flag_warning = false;
+                        }
+                        i--;
+                    }
+                }
                 offset = i - 1;
                 break;
             }
@@ -216,7 +226,7 @@ private:
                     offset = -2;
             }
         }
-
+        std::cout << "Offset: " << offset << std::endl;
         return offset;
     }
 
