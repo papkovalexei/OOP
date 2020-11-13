@@ -1,131 +1,64 @@
 #ifndef H_BACKUP
 #define H_BACKUP
 
+#include <string>
 #include <iostream>
-#include <vector>
-#include <ctime>
-#include <set>
 #include <map>
-#include <fstream>
 
-#include "file.h"
-#include "restore_point.h"
-
-
-#define SEPARATE_STORAGE 1
-#define ARCHIVE_STORAGE 2
-
+#include "restore_point_base.h"
 
 class backup
 {
 public:
-    backup() 
+    backup() {}
+
+    backup(const std::string& holder_file, const std::string& holder_backup)
+        : _holder_file(holder_file), _holder_backup(holder_backup), _creation_time(time(0)), _size(0), _id_points(0)
     {
 
-    }
-
-    backup(const std::vector<file>& files, int id, int mode)
-        : _new_files(files), _creation_time(time(0)), _backup_size(0), _id(id), _mode(mode)
-    {
-        for (auto& file : files)
-            _backup_size += file.size;
     }
 
     void create_restore_point_base()
     {
-        save_file();
+        std::vector<fs::path> buffer;
 
-        if (!_new_files.empty())
-        {
-            for (auto& file : _new_files)
-                _files.push_back(file);
-            _new_files.clear();
-        }
+        for (auto& file : fs::directory_iterator(_holder_file))
+            buffer.push_back(file.path());
 
-        _points.push_back(restore_point(_files, _points.size()));
+        _points[_id_points] = new restore_point_base(buffer);
+
+        _size += _points[_id_points]->get_size();
+
+        std::cout << "size: " << _size << std::endl;
+
+        _save_point(_id_points);
+
+        _id_points++;
     }
 
-    void create_restore_point_increment()
+    ~backup() {}
+private: 
+    void _save_point(int _id_point)
     {
-        if (_points.empty())
+        fs::path new_directory(_holder_backup);
+        new_directory += "/";
+        new_directory += std::to_string(_id_point);
+        new_directory += "/";
+    
+        fs::create_directories(new_directory);
+
+        for (auto& file : _points[_id_points]->get_files())
         {
-            create_restore_point_base();
-            return;
-        }
-
-        save_file();
-
-        _points.push_back(restore_point(_new_files, _points.size(), _points[_points.size() - 1].get_id()));
-
-        for (auto& file : _new_files)
-            _files.push_back(file);
-        _new_files.clear();
-    }
-
-    void add_file(const file& file_)
-    {
-        _backup_size += file_.size;
-        _new_files.push_back(file_);
-    }
-
-    void remove_file(const file& file_)
-    {
-        for (auto it = _new_files.begin(); it != _new_files.end(); it++)
-        {
-            if ((*it) == file_)
-            {
-                _backup_size -= file_.size;
-                _new_files.erase(it);
-                break;
-            }
+            fs::copy(file, new_directory);
         }
     }
 
-    std::vector<restore_point>& get_all_points()
-    {
-        return _points;
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, const backup& back)
-    {
-        time_t cast_time = back._creation_time;
-
-        os << "Time create: " << ctime(&cast_time);
-        os << "ID: " << back._id << "   Size: " << back._backup_size << std::endl;
-
-        for (auto& file : back._files)
-            os << file << std::endl;
-        os << "--------------------------------" << std::endl;
-
-        for (auto& point : back._points)
-            os << point << "--------------------" << std::endl;
-
-        return os;
-    }
-
-private:
-    void save_file()
-    {
-        std::ofstream log("backuplog", std::ios::app);
-
-        if (_mode == SEPARATE_STORAGE)
-        {
-            for (auto& file : _new_files)
-                log << "Save " << file << std::endl;
-        }
-        else
-        {
-            log << "New file: backup " << std::endl << _backup_size << " kb" << std::endl;
-        }
-
-        log.close();
-    }
-
-    std::vector<file> _files;
-    std::vector<file> _new_files;
-    std::vector<restore_point> _points;
-    int _id, _backup_size, _mode;
+    std::map<int, _restore_point*> _points;
+    fs::path _holder_file;
+    fs::path _holder_backup;
+    size_t _size;
     time_t _creation_time;
+    int _id_points;
 };
 
 #endif
