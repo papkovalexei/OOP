@@ -13,16 +13,10 @@ public:
     _restore_point()
         : _creation_time(time(0)), _size(0)
     {
-
-    }
-
-    _restore_point(const std::vector<fs::path>& files)
-        : _files(files), _creation_time(time(0)), _size(0)
-    {
         
     }
 
-    ~_restore_point()
+    virtual ~_restore_point()
     {
         for (auto& file : _files)
             fs::remove(file);
@@ -33,13 +27,27 @@ public:
         return _size;
     }
 
-    std::vector<fs::path>& get_files()
+    const std::vector<fs::path>& get_files() 
     {
         return _files;
     }
 
+    fs::path get_path() const
+    {
+        return _path;
+    }
+
+    virtual void reboot_link(const fs::path& path)
+    {
+        _path = path;
+        _files.clear();
+        
+        for (auto& file : fs::directory_iterator(path))
+            _files.push_back(file);
+    }
 protected:
     std::vector<fs::path> _files;
+    fs::path _path;
     time_t _creation_time;
     size_t _size;
     int _id, _prev_id;

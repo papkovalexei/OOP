@@ -6,15 +6,18 @@
 class restore_point_base : public _restore_point
 {
 public:
-    restore_point_base(const std::vector<fs::path>& files)
-        : _restore_point(files)
+    restore_point_base(const fs::path& path)
+        : _restore_point()
     {
-        for (const auto& file : files)
+        _path = path;
+        
+        for (auto& file : fs::directory_iterator(path))
+        {
+            _files.push_back(file);
             _size += fs::file_size(file);
+        }
     }
-
 private:
-
 };
 
 #endif
