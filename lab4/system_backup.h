@@ -9,9 +9,9 @@
 class system_backup
 {
 public:
-    int create_backup(const std::string& holder_file, const std::string& holder_backup, MODE_SAVING mode_saving)
+    int create_backup(const std::string& holder_backup, MODE_SAVING mode_saving)
     {
-        _backups[_id_backup] = backup(holder_file, holder_backup, mode_saving);
+        _backups[_id_backup] = backup(holder_backup, mode_saving);
 
         return _id_backup++;
     }
@@ -36,11 +36,35 @@ public:
         _backups[id].clean();
     }
 
+    void add_file(int id, const fs::path& file)
+    {
+        _backups[id].add_file(file);
+    }
+
+    void remove_file(int id, const fs::path& file)
+    {
+        _backups[id].remove_file(file);
+    }
+
     void print(int id)
     {
         std::cout << _backups[id];
     }
 
+    void clear_size(int id)
+    {
+
+    }
+
+    void clear_count(int id)
+    {
+        
+    }
+
+    void clear_time(int id)
+    {
+        
+    }
 private:
     std::map<int, backup> _backups;
     static int _id_backup;

@@ -22,8 +22,8 @@ class backup
 public:
     backup() {}
 
-    backup(const std::string& holder_file, const std::string& holder_backup, MODE_SAVING mode_saving)
-        : _holder_file(holder_file), _holder_backup(holder_backup), _creation_time(time(0)), _size(0), _id_points(0), 
+    backup(const std::string& holder_backup, MODE_SAVING mode_saving)
+        : _holder_backup(holder_backup), _creation_time(time(0)), _size(0), _id_points(0), 
             _mode_saving(mode_saving)
     {
 
@@ -35,7 +35,7 @@ public:
     {
         fs::path buffer_path = _get_path(_id_points);
 
-        _points[_id_points] = new restore_point_base(_holder_file);
+        _points[_id_points] = new restore_point_base(_files);
         _save_data(_points[_id_points]->get_files(), buffer_path);
 
         _points[_id_points]->reboot_link(buffer_path);
@@ -58,7 +58,7 @@ public:
 
             fs::path buffer_path = _get_path(_id_points);
 
-            _points[_id_points] = new restore_point_inc(_holder_file, _points);
+            _points[_id_points] = new restore_point_inc(_files, _points);
 
             _save_data(_points[_id_points]->get_files(), buffer_path);
             _points[_id_points++]->reboot_link(buffer_path);
@@ -80,6 +80,23 @@ public:
         {
             _points[(**it).first]->~_restore_point();
             _points.erase((*it));
+        }
+    }
+
+    void add_file(const fs::path& file)
+    {
+        _files.push_back(file);
+    }
+
+    void remove_file(const fs::path& file)
+    {
+        for (auto it = _files.begin(); it != _files.end(); it++)
+        {
+            if ((*it) == file)
+            {
+                _files.erase(it);
+                break;
+            }
         }
     }
 
@@ -159,7 +176,7 @@ private:
     }
 
     std::map<int, _restore_point*> _points;
-    fs::path _holder_file;
+    std::vector<fs::path> _files;
     fs::path _holder_backup;
     MODE_SAVING _mode_saving;
     size_t _size;

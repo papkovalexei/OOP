@@ -9,10 +9,13 @@ int main()
 {
     system_backup sys;
 
-    int id = sys.create_backup(PATH_HOLDER_FILE, PATH_HOLDER_BACKUP, MODE_SAVING::ARCHIVE_STORAGE);
+    int id = sys.create_backup(PATH_HOLDER_BACKUP, MODE_SAVING::ARCHIVE_STORAGE);
     time_t time1 = time(0);
     std::cout << time1 << std::endl;
     cleaner clean{0, 0, time1};
+
+    for (auto& file : fs::directory_iterator(PATH_HOLDER_FILE))
+        sys.add_file(id, file.path());
 
     sys.set_cleaner(id, &clean);
 

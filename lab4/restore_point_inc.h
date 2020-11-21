@@ -2,6 +2,7 @@
 #define H_RESTORE_POINT_INC
 
 #include <map>
+#include <vector>
 
 #include "_restore_point.h"
 #include "restore_point_base.h"
@@ -9,10 +10,15 @@
 class restore_point_inc : public _restore_point
 {
 public:
-    restore_point_inc(const fs::path& path, std::map<int, _restore_point*>& old_points) // old_files - reference to base->inc->inc point
+    restore_point_inc(const std::vector<fs::path>& files, std::map<int, _restore_point*>& old_points) // old_files - reference to base->inc->inc point
         : _restore_point()
     {
-        _path = path;
+        fs::path path = "buffer/";
+
+        fs::create_directory(path);
+
+        for (auto& file : files)
+            fs::copy(file, path);
 
         std::string command = "diff -Nar ";
 
@@ -57,6 +63,7 @@ public:
             if (it == old_points.begin())
                 break;
         }
+        fs::remove_all(path);
 
         _size += fs::file_size(std::to_string(_creation_time));
     }
