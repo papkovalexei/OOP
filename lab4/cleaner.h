@@ -12,21 +12,53 @@
 #define MODE_COUNT 2
 #define MODE_SIZE 4
 
-#define MODE_DELETE_ALL 1
-#define MODE_DELETE_ONE 2
+#define MODE_DELETE_ALL 8
+#define MODE_DELETE_ONE 16
 
 class cleaner
 {
 public:
     cleaner() 
-        : _size(-1), _count(-1), _time(-1) 
+        : _size(-1), _count(-1), _time(-1), _mode_gybrid(-1) 
     {}
 
     cleaner(int size, int count, time_t time)
-        : _size(size), _count(count), _time(time)
+        : _size(size), _count(count), _time(time), _mode_gybrid(-1)
     {}
 
-    std::vector<std::map<int, _restore_point*>::iterator> clean_count(std::map<int, _restore_point*>& points)
+    cleaner(int size, int count, time_t time, int mode_gybrid)
+        : _size(size), _count(count), _time(time), _mode_gybrid(mode_gybrid)
+    {}
+
+    std::vector<std::map<int, _restore_point*>::iterator> clear_point(std::map<int, _restore_point*>& points)
+    {
+        if (_mode_gybrid != -1)
+            return _clean_gybrid(points);
+        else
+        {
+            if (_size != -1)
+            {
+                int size = 0;
+                for (auto it = points.begin(); it != points.end(); it++)
+                    size += (*it).second->get_size();
+                return _clean_size(points, size);
+            }
+
+            if (_count != -1)
+            {
+                return _clean_count(points);
+            }
+
+            if (_time != -1)
+            {
+                return _clean_time(points);
+            }
+            else
+                return std::vector<std::map<int, _restore_point*>::iterator>();
+        }
+    }
+protected:
+    std::vector<std::map<int, _restore_point*>::iterator> _clean_count(std::map<int, _restore_point*>& points)
     {
         std::vector<std::map<int, _restore_point*>::iterator> answer;
         int buffer_count = 0;
@@ -62,7 +94,7 @@ public:
         return answer;
     }
 
-    std::vector<std::map<int, _restore_point*>::iterator> clean_size(std::map<int, _restore_point*>& points, int size)
+    std::vector<std::map<int, _restore_point*>::iterator> _clean_size(std::map<int, _restore_point*>& points, int size)
     {
         std::vector<std::map<int, _restore_point*>::iterator> answer;
         int buffer_size = 0;
@@ -98,7 +130,7 @@ public:
         return answer;
     }
 
-    std::vector<std::map<int, _restore_point*>::iterator> clean_time(std::map<int, _restore_point*>& points)
+    std::vector<std::map<int, _restore_point*>::iterator> _clean_time(std::map<int, _restore_point*>& points)
     {
         std::vector<std::map<int, _restore_point*>::iterator> answer;
 
@@ -151,30 +183,30 @@ public:
         return answer;
     }
 
-    std::vector<std::map<int, _restore_point*>::iterator> clean_gybrid(std::map<int, _restore_point*>& points, int mode, int when)
+    std::vector<std::map<int, _restore_point*>::iterator> _clean_gybrid(std::map<int, _restore_point*>& points)
     {
         int answer_offset;
         std::vector<std::map<int, _restore_point*>::iterator> answer;
         std::vector<int> points_offset;
 
-        if (mode & MODE_COUNT)
+        if (_mode_gybrid & MODE_COUNT)
         {
-            points_offset.push_back(clean_count(points).size());
+            points_offset.push_back(_clean_count(points).size());
         }
 
-        if (mode & MODE_SIZE)
+        if (_mode_gybrid & MODE_SIZE)
         {
             int size = 0;
             for (auto it = points.begin(); it != points.end(); it++)
                 size += (*it).second->get_size();
 
-            points_offset.push_back(clean_size(points, size).size());
+            points_offset.push_back(_clean_size(points, size).size());
         }
 
-        if (mode & MODE_TIME)
-            points_offset.push_back(clean_time(points).size());
+        if (_mode_gybrid & MODE_TIME)
+            points_offset.push_back(_clean_time(points).size());
 
-        if (when == MODE_DELETE_ALL)
+        if (_mode_gybrid & MODE_DELETE_ALL)
             answer_offset = (*std::min_element(points_offset.begin(), points_offset.end()));
         else
             answer_offset = (*std::max_element(points_offset.begin(), points_offset.end()));
@@ -192,9 +224,10 @@ public:
 
         return answer;
     }
-protected:
+
     int _size;
     int _count;
+    int _mode_gybrid;
     time_t _time;
 };
 
