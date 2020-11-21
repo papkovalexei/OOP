@@ -26,6 +26,21 @@ public:
         _backups[id].create_restore_point_inc();
     }
 
+    void set_cleaner(int id, cleaner* clean)
+    {
+        _backups[id].set_cleaner(clean);
+    }
+
+    void clean(int id)
+    {
+        _backups[id].clean();
+    }
+
+    void print(int id)
+    {
+        std::cout << _backups[id];
+    }
+
 private:
     std::map<int, backup> _backups;
     static int _id_backup;
