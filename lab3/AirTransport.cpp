@@ -27,7 +27,5 @@ void AirTransport::setReducer(float distance_reducer)
 
 float AirTransport::move(float distance)
 {
-    distance = reducer(distance);
-
-    return distance / _speed;
+    return reducer(distance) / _speed;
 }

@@ -19,9 +19,7 @@ public:
 
     backup(const std::string& holder_backup, _save* saver)
         : _holder_backup(holder_backup), _creation_time(time(0)), _size(0), _id_points(0), _saver(saver)
-    {
-
-    }
+    {}
 
     ~backup() {}
 
@@ -50,7 +48,6 @@ public:
         }
         else
         {
-
             fs::path buffer_path = _get_path(_id_points);
 
             _points[_id_points] = new restore_point_inc(_files, _points);
