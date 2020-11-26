@@ -80,7 +80,8 @@ void init(std::map<int, cbank*>& bank, std::vector<ccard>& accounts)
         builder_client->create_id();
         builder_client->set_address(names[i].address);
         builder_client->set_name_surname(names[i].name, names[i].surname);
-        builder_client->set_passport(std::to_string(std::rand() % 100'000'0 + 100));
+        if (rand() % 2)
+            builder_client->set_passport(std::to_string(std::rand() % 100'000'0 + 100));
 
         int buffer = rand() % 3;
         auto client = builder_client->get_client();

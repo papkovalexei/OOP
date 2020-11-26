@@ -13,6 +13,7 @@ public:
 
     std::map<int, caccount*> accounts;
     float warning_limit;
+    int time_limit;
     int id_bank;
 };
 

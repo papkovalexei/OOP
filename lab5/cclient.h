@@ -12,7 +12,9 @@
 class cclient
 {
 public:
-    cclient() {}
+    cclient() 
+        : _status(true)
+    {}
 
     void set_id(int id)
     {
@@ -36,7 +38,10 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, cclient& client)
     {
-        os << "│    ├──┬ ID client: " << client._id_client << std::endl;
+        if (client._status)
+            os << "│    ├──┬ ID client(+): " << client._id_client << std::endl;
+        else
+            os << "│    ├──┬ ID client(-): " << client._id_client << std::endl;
         os << "│    │  ├── Name " << client._information["name"] << " " << client._information["surname"] << std::endl;
 
         if (client._information.count("passport") != 0)
@@ -60,9 +65,13 @@ public:
         return _information[field];
     }
 
-    void set_status(bool status)
+    void set_limits(float money_limit, int time_limit)
     {
-        _status = status;
+        _status = false;
+        for (int i = 0; i < _accounts.size(); i++)
+        {
+            _accounts[i]->set_limits(money_limit, time_limit);
+        }
     }
 
 

@@ -29,11 +29,7 @@ public:
 
         if (client.get_info("passport").empty() || client.get_info("address").empty())
         {
-            _clients[client.get_id()].set_status(true);
-        }
-        else
-        {
-            _clients[client.get_id()].set_status(false);
+            _clients[client.get_id()].set_limits(_bank_info.warning_limit, _bank_info.time_limit);
         }
 
     }

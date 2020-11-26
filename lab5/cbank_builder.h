@@ -8,7 +8,7 @@ class cbank_builder
 public:
     virtual ~cbank_builder() {}
     virtual void create_bank_id() = 0;
-    virtual void create_warning_limit(float limit) = 0;
+    virtual void create_warning_limit(float limit, int time) = 0;
     virtual void create_account(caccount* account) = 0;
 };
 
@@ -31,9 +31,10 @@ public:
         bank->id_bank = id_bank++;
     }
 
-    void create_warning_limit(float limit) override
+    void create_warning_limit(float limit, int time) override
     {
         bank->warning_limit = limit;
+        bank->time_limit = time;
     }
 
     void create_account(caccount* account) override
@@ -91,7 +92,7 @@ public:
         cdeposit_account* deposit = new cdeposit_account{buffer_intervals, 4};
 
         builder->create_bank_id();
-        builder->create_warning_limit(10'000);
+        builder->create_warning_limit(10'000, 10);
         builder->create_account(credit);
         builder->create_account(debit);
         builder->create_account(deposit);
@@ -121,7 +122,7 @@ public:
         cdeposit_account* deposit = new cdeposit_account{buffer_intervals, rand() % 30};
 
         builder->create_bank_id();
-        builder->create_warning_limit(std::rand() % 100'000);
+        builder->create_warning_limit(std::rand() % 100'000, rand() % 30 + 1);
         builder->create_account(credit);
         builder->create_account(debit);
         builder->create_account(deposit);
