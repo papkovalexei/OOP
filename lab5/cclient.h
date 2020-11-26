@@ -65,6 +65,15 @@ public:
         _status = status;
     }
 
+
+    void recalculation()
+    {
+        for (int i = 0; i < _accounts.size(); i++)
+        {
+            _accounts[i]->recalculation();
+        }
+    }
+
 private:
     int _id_client;
     bool _status;

@@ -88,7 +88,7 @@ public:
         buffer_pair.second = 4;
         buffer_intervals.push_back(buffer_pair);
 
-        cdeposit_account* deposit = new cdeposit_account{buffer_intervals};
+        cdeposit_account* deposit = new cdeposit_account{buffer_intervals, 4};
 
         builder->create_bank_id();
         builder->create_warning_limit(10'000);
@@ -118,7 +118,7 @@ public:
             right += std::rand() % 50'000;
         }
 
-        cdeposit_account* deposit = new cdeposit_account{buffer_intervals};
+        cdeposit_account* deposit = new cdeposit_account{buffer_intervals, rand() % 30};
 
         builder->create_bank_id();
         builder->create_warning_limit(std::rand() % 100'000);

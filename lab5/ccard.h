@@ -23,6 +23,22 @@ public:
         return _id_program;
     }
 
+    int get_id_card() const
+    {
+        return _id_card;
+    }
+
+    std::string get_number() const
+    {
+        std::string result = convert_to_output(_id_bank);
+        result += " ";
+        result += convert_to_output(_id_program);
+        result += " ";
+        result += convert_to_output(_id_card);
+
+        return result;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, ccard& card)
     {
         os << card.convert_to_output(card._id_bank) << " " << card.convert_to_output(card._id_program)
