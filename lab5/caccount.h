@@ -38,6 +38,12 @@ public:
         _time_limit = time_limit;
     }
 
+    void delete_limits()
+    {
+        _limit_warning = -1;
+        _time_limit = -1;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, caccount* account)
     {
         os << "Money: " << account->_money << " " << account->_card;
@@ -318,8 +324,9 @@ public:
             }
         }
 
-        if (_time % _period == 0)
+        if (_period != 0 && _time % _period == 0)
         {
+            _period = 0;
             _money += _delta;
             _delta = 0;
         }

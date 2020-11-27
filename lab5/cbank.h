@@ -28,10 +28,14 @@ public:
         _clients[client.get_id()] = client;
 
         if (client.get_info("passport").empty() || client.get_info("address").empty())
-        {
             _clients[client.get_id()].set_limits(_bank_info.warning_limit, _bank_info.time_limit);
-        }
 
+    }
+
+    void update_client_info(cclient& client)
+    {
+        if (!client.get_info("passport").empty() && !client.get_info("address").empty())
+            _clients[client.get_id()].delete_limits();
     }
 
     template <class T>
@@ -88,6 +92,12 @@ public:
 
             os << "│    │\n";
         }
+        os << "│ ├──┬ All history: " << std::endl;
+
+        for (auto it = bank._history.begin(); it != bank._history.end(); it++)
+        {
+            os << "│ │  ├── " << (*it)->get_description() << std::endl;
+        }
 
         os << "│ └──┬ Clients:" << std::endl;
 
@@ -108,8 +118,9 @@ public:
         virtual void cancel() = 0;
         virtual std::string get_description() = 0;
     protected:
+        bool _canceled;
         ccommand(std::map<int, cbank*>& bank)
-            : _bank(bank)
+            : _bank(bank), _canceled(false)
         {}
 
         std::map<int, cbank*>& _bank;
@@ -117,6 +128,8 @@ public:
 
     void recalculation()
     {
+        _history[rand() % _history.size()]->cancel();
+
         for (auto it = _clients.begin(); it != _clients.end(); it++)
         {
             (*it).second.recalculation();
@@ -151,11 +164,15 @@ public:
             result += std::to_string(_money);
             result += ")";
 
+            if (_canceled)
+                result += "  cancel";
+
             return result;
         }
 
         void cancel() override
         {
+            _canceled = true;
             auto from_account = _bank[_from.get_id_bank()]->get_account(_from);
             auto to = _bank[_to.get_id_bank()]->get_account(_to);
 
@@ -190,11 +207,16 @@ public:
             result += std::to_string(_money);
             result += ")";
 
+
+            if (_canceled)
+                result += "  cancel";
+
             return result;
         }
 
         void cancel() override
         {
+            _canceled = true;
             auto from_account = _bank[_from.get_id_bank()]->get_account(_from);
 
             from_account->put_money(_money);
@@ -228,11 +250,16 @@ public:
             result += " (money: ";
             result += std::to_string(_money);
             result += ")";
+
+            if (_canceled)
+                result += "  cancel";
+
             return result;
         }
 
         void cancel() override
         {
+            _canceled = true;
             auto to_account = _bank[_to.get_id_bank()]->get_account(_to);
 
             to_account->withdraw_money(_money);

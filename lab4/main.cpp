@@ -11,7 +11,7 @@ int main()
 {
     system_backup sys;
     time_t time1 = time(0);
-    cleaner clean{-1, 2, -1};
+    cleaner clean{1000000, 2, -1, MODE_COUNT | MODE_SIZE | MODE_DELETE_ONE};
     save_base save;
     save_archive save_arc(std::to_string(time1));
 
@@ -25,8 +25,8 @@ int main()
     sys.create_restore_point_base(id);  
     sys.create_restore_point_base(id);
     sys.create_restore_point_inc(id);
-    sys.create_restore_point_inc(id);
     sys.create_restore_point_base(id);
+    sys.create_restore_point_inc(id);
     sys.create_restore_point_base(id);
 
     sys.print(id);
